@@ -1,6 +1,6 @@
-# UsfmPdfPreview demo
+# UsfmEditor demo
 
-The demo demonstrates using the UsfmPdfPreview in standalone mode 
+The demo demonstrates using the UsfmEditor in standalone mode 
 (with all Proskomma / Epitetele handling done through a PkCacheProvider, 
  which is included as a wrapper in the app).
 
@@ -21,7 +21,7 @@ const onSave = (bookCode,usfmText) => {
     console.log(usfmText)
   }
 
-  const pdfPreviewProps = {
+  const editorProps = {
     onSave,
     docSetId,
     usfmText,
@@ -30,7 +30,7 @@ const onSave = (bookCode,usfmText) => {
   
   return (
       <div key="1">
-        <UsfmPdfPreview {...pdfPreviewProps} />
+        <UsfmEditor {...editorProps} />
       </div>
   );
 };  

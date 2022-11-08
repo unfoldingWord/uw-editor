@@ -1,11 +1,11 @@
-import PdfPreview from "./components/PdfPreview";
-import UsfmPdfPreview from "./components/UsfmPdfPreview";
-import PkPdfPreview from "./components/PkPdfPreview";
+import Editor from "./components/Editor";
+import UsfmEditor from "./components/UsfmEditor";
+import PkEditor from "./components/PkEditor";
 import PkCacheProvider from "./context/LocalPkCacheContext";
 
 export {
-  PdfPreview,
-  UsfmPdfPreview,
-  PkPdfPreview,
+  Editor,
+  UsfmEditor,
+  PkEditor,
   PkCacheProvider,
 };
