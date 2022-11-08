@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/uw-editor.iml" filepath="$PROJECT_DIR$/.idea/uw-editor.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/uw-pdf-preview.iml" filepath="$PROJECT_DIR$/.idea/uw-pdf-preview.iml" />
     </modules>
   </component>
 </project>

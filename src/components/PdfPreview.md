@@ -1,6 +1,6 @@
-# Editor demo 1
+# PdfPreview demo 1
 
-The Editor expects input of a EpiteleteHtml object.
+The PdfPreview expects input of a EpiteleteHtml object.
 
 ```js
 import { useState, useEffect } from 'react';
@@ -8,7 +8,7 @@ import { useState, useEffect } from 'react';
 import EpiteleteHtml from "epitelete-html";
 import { useProskomma, useImport } from "proskomma-react-hooks";
 import { useDeepCompareCallback, useDeepCompareEffect, useDeepCompareMemo } from "use-deep-compare";
-import '../../node_modules/@xelah/type-perf-html/build/components/HtmlSequenceEditor.css'
+import '../../node_modules/@xelah/type-perf-html/build/components/HtmlSequencePdfPreview.css'
 
 const urlDocument = ({ selectors, bookCode, bookName, filename, ...props}) => ({
   selectors,
@@ -51,7 +51,7 @@ function Component () {
     ready && new EpiteleteHtml({ proskomma, docSetId, options: { historySize: 100 } })
   ), [proskomma, ready, docSetId]);
   
-  const editorProps = {
+  const pdfPreviewProps = {
     epiteleteHtml,
     bookId: 'tit',
     onSave,
@@ -61,7 +61,7 @@ function Component () {
   return (
     <>
     <div key="1">
-      { ready ? <Editor key="1" {...editorProps} /> : 'Loading...' }
+      { ready ? <PdfPreview key="1" {...pdfPreviewProps} /> : 'Loading...' }
     </div>
     </>
   );
@@ -72,7 +72,7 @@ function Component () {
 ```
 
 
-# Editor demo 2
+# PdfPreview demo 2
 
 The demo demonstrates using Epitelete in standalone mode (no Proskomma).
 Here is the function for sideloading:
@@ -120,7 +120,7 @@ function Component () {
     }, [ep, ready]
   )
   
-  const editorProps = {
+  const pdfPreviewProps = {
     epiteleteHtml: ep,
     bookId: 'TIT',
     onSave,
@@ -130,7 +130,7 @@ function Component () {
   return (
     <>
     <div key="1">
-      { ready ? <Editor key="1" {...editorProps} /> : 'Loading...'}
+      { ready ? <PdfPreview key="1" {...pdfPreviewProps} /> : 'Loading...'}
     </div>
     </>
   );

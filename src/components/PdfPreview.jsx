@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types';
 import { useDeepCompareCallback, useDeepCompareEffect } from "use-deep-compare";
 import isEqual from 'lodash.isequal';
-import { HtmlPerfEditor } from "@xelah/type-perf-html";
+import { HtmlPerfPdfPreview } from "@xelah/type-perf-html";
 import EpiteleteHtml from "epitelete-html";
 
 import { Skeleton, Stack } from "@mui/material";
-import useEditorState from "../hooks/useEditorState";
+import usePdfPreviewState from "../hooks/usePdfPreviewState";
 import Section from "./Section";
 import SectionHeading from "./SectionHeading";
 import SectionBody from "./SectionBody";
@@ -14,7 +14,7 @@ import Buttons from "./Buttons"
 
 // import GraftPopup from "./GraftPopup"
 
-export default function Editor( props) {
+export default function PdfPreview( props) {
   const { onSave, epiteleteHtml, bookId, verbose } = props;
   // const [graftSequenceId, setGraftSequenceId] = useState(null);
 
@@ -90,7 +90,7 @@ export default function Editor( props) {
       setSequenceId,
       setToggles,
     },
-  } = useEditorState({sequenceIds: [htmlPerf?.mainSequenceId], ...props});
+  } = usePdfPreviewState({sequenceIds: [htmlPerf?.mainSequenceId], ...props});
 
   let sequenceIds
   sequenceIds = [htmlPerf?.mainSequenceId]
@@ -121,7 +121,7 @@ export default function Editor( props) {
     editable,
     preview
   };
-  const htmlEditorProps = {
+  const htmlPdfPreviewProps = {
     htmlPerf,
     onHtmlPerf,
     sequenceIds,
@@ -139,7 +139,7 @@ export default function Editor( props) {
 
 
   // const graftProps = {
-  //   ...htmlEditorProps,
+  //   ...htmlPdfPreviewProps,
   //   options: { ...options, sectionable: false },
   //   sequenceIds: [graftSequenceId],
   //   graftSequenceId,
@@ -160,23 +160,23 @@ export default function Editor( props) {
     onSave:handleSave,
   }
 
-  // const graftSequenceEditor = (
+  // const graftSequencePdfPreview = (
   //   <>
-  //     <h2>Graft Sequence Editor</h2>
-  //     <HtmlPerfEditor key="2" {...graftProps} />
+  //     <h2>Graft Sequence PdfPreview</h2>
+  //     <HtmlPerfPdfPreview key="2" {...graftProps} />
   //   </>
   // );
 
   return (
-    <div key="1" className="Editor" style={style}>
+    <div key="1" className="PdfPreview" style={style}>
       <Buttons {...buttonsProps} />
-      {sequenceId && htmlPerf ? <HtmlPerfEditor {...htmlEditorProps} /> : skeleton}
+      {sequenceId && htmlPerf ? <HtmlPerfPdfPreview {...htmlPdfPreviewProps} /> : skeleton}
       {/* <GraftPopup {...graftProps} /> */}
     </div>
   );
 };
 
-Editor.propTypes = {
+PdfPreview.propTypes = {
   onSave: PropTypes.func,
   epiteleteHtml: PropTypes.instanceOf(EpiteleteHtml),
   bookId: PropTypes.string,

@@ -1,9 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types';
-import PkEditor from "./PkEditor";
+import PkPdfPreview from "./PkPdfPreview";
 import usePkImport from "../hooks/usePkImport";
 
-export default function UsfmEditor( props) {
+export default function UsfmPdfPreview( props) {
   const { docSetId, usfmText, bookId } = props;
   const docSetBookId = `${docSetId}/${bookId}`
 
@@ -12,12 +12,12 @@ export default function UsfmEditor( props) {
   return (
     <div>
       {loading && (<div>Loading...</div>)}
-      {done && <PkEditor { ...props } />}
+      {done && <PkPdfPreview { ...props } />}
     </div>
   )
 };
 
-UsfmEditor.propTypes = {
+UsfmPdfPreview.propTypes = {
   onSave: PropTypes.func,
   docSetId: PropTypes.string,
   usfmText: PropTypes.string,

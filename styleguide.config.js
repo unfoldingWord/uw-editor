@@ -10,9 +10,9 @@ module.exports = {
   exampleMode: 'expand',
   moduleAliases: {},
   components: [
-    'src/components/PkEditor.jsx',
-    'src/components/UsfmEditor.jsx',
-    'src/components/Editor.jsx',
+    'src/components/PkPdfPreview.jsx',
+    'src/components/UsfmPdfPreview.jsx',
+    'src/components/PdfPreview.jsx',
   ],
   getComponentPathLine: componentPath => {
     const name = path.basename(componentPath, '.jsx');
