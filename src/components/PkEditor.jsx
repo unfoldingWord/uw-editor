@@ -1,10 +1,10 @@
 import React, { useState, useContext } from 'react'
 import PropTypes from 'prop-types';
 import { useDeepCompareEffect } from "use-deep-compare";
-import PdfPreview from "./PdfPreview";
+import Editor from "./Editor";
 import { LocalPkCacheContext } from '../context/LocalPkCacheContext'
 
-export default function PkPdfPreview( props) {
+export default function PkEditor( props) {
   const { docSetId, bookId } = props;
   const [epiteleteHtml, setEpiteleteHtml] = useState();
 
@@ -20,16 +20,16 @@ export default function PkPdfPreview( props) {
     }
   }, [epCache, docSetId]);
 
-  const pdfPreviewProps = {
+  const editorProps = {
     ...props,
     bookId,
     epiteleteHtml,
   };
 
-  return (<PdfPreview { ...pdfPreviewProps } />)
+  return (<Editor { ...editorProps } />)
 };
 
-PkPdfPreview.propTypes = {
+PkEditor.propTypes = {
   onSave: PropTypes.func,
   docSetId: PropTypes.string,
   bookId: PropTypes.string, 

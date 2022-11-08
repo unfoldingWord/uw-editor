@@ -1,6 +1,6 @@
-# PkPdfPreview demo
+# PkEditor demo
 
-The demo demonstrates using the PkPdfPreview in standalone mode 
+The demo demonstrates using the PkEditor in standalone mode 
 (with all Proskomma / Epitetele handling done through a PkCacheProvider, 
  which is included as a wrapper in the app).
 
@@ -23,7 +23,7 @@ function Component () {
     console.log(usfmText)
   }
 
-  const pdfPreviewProps = {
+  const editorProps = {
     onSave,
     docSetId,
     bookId,
@@ -31,7 +31,7 @@ function Component () {
   
   return (
       <div key="1">
-        { done ? <PkPdfPreview {...pdfPreviewProps} /> : 'Loading...'}
+        { done ? <PkEditor {...editorProps} /> : 'Loading...'}
       </div>
   );
 };  

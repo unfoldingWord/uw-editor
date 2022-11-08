@@ -1,3 +1,3 @@
-# uw-pdf-preview
+# uw-editor
 
-Demos at: https://uw-pdf-preview.netlify.app/
+Demos at: https://uw-editor.netlify.app/
