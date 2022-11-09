@@ -11,8 +11,11 @@
 # production
 /build
 /styleguide
+/dist
 
 # misc
+.yalc
+yalc.lock
 .DS_Store
 .env.local
 .env.development.local
