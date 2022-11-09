@@ -20,6 +20,7 @@ export default function Editor( props) {
 
   // const [isSaving, startSaving] = useTransition();
   const [htmlPerf, setHtmlPerf] = useState();
+  const [alignmentData, setAlignmentData] = useState();
 
   const bookCode = bookId.toUpperCase()
   const [lastSaveHistoryLength, setLastSaveHistoryLength] = useState(epiteleteHtml?.history[bookCode] ? epiteleteHtml.history[bookCode].stack.length : 1)
@@ -29,10 +30,11 @@ export default function Editor( props) {
     if (epiteleteHtml) {
       //        epiteleteHtml.readHtml(bookCode,{},bcvQuery).then((_htmlPerf) => {
       epiteleteHtml.readHtml( bookCode, readOptions ).then((_htmlPerf) => {
+        setAlignmentData(epiteleteHtml.getPipelineData(bookCode))
         setHtmlPerf(_htmlPerf);
       });
     }
-  }, [epiteleteHtml, bookCode]);
+  }, [epiteleteHtml, bookCode, setAlignmentData, setHtmlPerf]);
 
   const onHtmlPerf = useDeepCompareCallback(( _htmlPerf, { sequenceId }) => {
     const perfChanged = !isEqual(htmlPerf, _htmlPerf);
@@ -44,10 +46,13 @@ export default function Editor( props) {
       if (verbose) console.log({ info: "Saved sequenceId", bookCode, sequenceId });
 
       const perfChanged = !isEqual(htmlPerf, newHtmlPerf);
-      if (perfChanged) setHtmlPerf(newHtmlPerf);
+      if (perfChanged) {
+        setAlignmentData(epiteleteHtml.getPipelineData(bookCode))
+        setHtmlPerf(newHtmlPerf);
+      }
     };
     saveNow()
-  }, [htmlPerf, bookCode]);
+  }, [htmlPerf, bookCode, setAlignmentData, setHtmlPerf]);
 
   const handleSave = async () => {
     setLastSaveHistoryLength( epiteleteHtml?.history[bookCode].stack.length )
@@ -151,13 +156,15 @@ export default function Editor( props) {
     blockable,
     editable,
     preview,
+    allAligned: !alignmentData || !alignmentData?.unalignedWords || Object.keys(alignmentData?.unalignedWords).length===0,
+    onShowUnaligned: () => console.log("onShowUnaligned"),
     undo,
     redo,
     canUndo,
     canRedo,
     setToggles,
     canSave,
-    onSave:handleSave,
+    onSave: handleSave,
   }
 
   // const graftSequenceEditor = (
