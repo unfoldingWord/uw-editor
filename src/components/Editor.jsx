@@ -20,21 +20,46 @@ export default function Editor( props) {
 
   // const [isSaving, startSaving] = useTransition();
   const [htmlPerf, setHtmlPerf] = useState();
-  const [alignmentData, setAlignmentData] = useState();
+  const [orgUnaligned, setOrgUnaligned] = useState();
+  const [brokenAlignedWords, setBrokenAlignedWords] = useState({});
 
   const bookCode = bookId.toUpperCase()
   const [lastSaveHistoryLength, setLastSaveHistoryLength] = useState(epiteleteHtml?.history[bookCode] ? epiteleteHtml.history[bookCode].stack.length : 1)
   const readOptions = { readPipeline: "stripAlignment" }
+  
+  const arrayToObject = (array, keyField) =>
+    array.reduce((obj, item) => {
+      let iCopy = Object.assign({}, item);
+      delete iCopy[keyField]
+      obj[item[keyField]] = iCopy;
+      return obj
+    }, {})
+
+  const getFlatWordObj = (obj) => {
+    const resArray = [];
+    if (obj) {
+      Object.entries(obj).forEach(([chNum, chObj]) => {
+        Object.entries(chObj).forEach(([vNum, verseArr]) => {
+          console.log(verseArr)
+          verseArr.forEach(wObj => {
+            resArray.push({ id: `${chNum}.${vNum}.${wObj?.word}`, wObj })
+          })
+        })
+      })
+    }
+    return arrayToObject(resArray,"id")
+  }
 
   useDeepCompareEffect(() => {
     if (epiteleteHtml) {
       //        epiteleteHtml.readHtml(bookCode,{},bcvQuery).then((_htmlPerf) => {
       epiteleteHtml.readHtml( bookCode, readOptions ).then((_htmlPerf) => {
-        setAlignmentData(epiteleteHtml.getPipelineData(bookCode))
+        const _alignmentData = epiteleteHtml.getPipelineData(bookCode)
+        setOrgUnaligned(getFlatWordObj(_alignmentData?.unalignedWords))
         setHtmlPerf(_htmlPerf);
       });
     }
-  }, [epiteleteHtml, bookCode, setAlignmentData, setHtmlPerf]);
+  }, [epiteleteHtml, bookCode, setOrgUnaligned, setHtmlPerf]);
 
   const onHtmlPerf = useDeepCompareCallback(( _htmlPerf, { sequenceId }) => {
     const perfChanged = !isEqual(htmlPerf, _htmlPerf);
@@ -47,12 +72,17 @@ export default function Editor( props) {
 
       const perfChanged = !isEqual(htmlPerf, newHtmlPerf);
       if (perfChanged) {
-        setAlignmentData(epiteleteHtml.getPipelineData(bookCode))
+        const _alignmentData = epiteleteHtml.getPipelineData(bookCode)
+        const nextUnalignedData = getFlatWordObj(_alignmentData?.unalignedWords)
+        const diffUnaligned = Object.keys(orgUnaligned)
+          .filter(x => !nextUnalignedData[x])
+          .concat(Object.keys(nextUnalignedData).filter(x => !orgUnaligned[x]))
+        setBrokenAlignedWords(diffUnaligned)
         setHtmlPerf(newHtmlPerf);
       }
     };
     saveNow()
-  }, [htmlPerf, bookCode, setAlignmentData, setHtmlPerf]);
+  }, [htmlPerf, bookCode, orgUnaligned, setBrokenAlignedWords, setHtmlPerf]);
 
   const handleSave = async () => {
     setLastSaveHistoryLength( epiteleteHtml?.history[bookCode].stack.length )
@@ -156,7 +186,7 @@ export default function Editor( props) {
     blockable,
     editable,
     preview,
-    allAligned: !alignmentData || !alignmentData?.unalignedWords || Object.keys(alignmentData?.unalignedWords).length===0,
+    allAligned: (brokenAlignedWords.length===0),
     onShowUnaligned: () => console.log("onShowUnaligned"),
     undo,
     redo,
