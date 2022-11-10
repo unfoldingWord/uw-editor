@@ -44,15 +44,14 @@ export default function SearchReplace(props) {
   };
 
   const getGroups = async ({ target, replacement = "", resultsKeys }) => {
-    return await sourcesKeys.reduce(async (groups, groupKey) => {
-      const sourceKey = sourcesKeys[groupKey];
+    return await sourcesKeys.reduce(async (groups, sourceKey) => {
       const group = await buildGroup({
         sourceKey,
         target,
         replacement,
         resultsKeys,
       });
-      groups[groupKey] = group;
+      groups[sourceKey] = group;
       return groups;
     }, {});
   };
