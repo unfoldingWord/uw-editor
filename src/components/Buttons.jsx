@@ -58,7 +58,7 @@ export default function Buttons(props) {
   };
 
   const handleAssignmentDataClick = (event) => {
-    onShowUnaligned();
+    onShowUnaligned(event);
     event.preventDefault();
     return false;
   };
