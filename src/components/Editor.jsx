@@ -68,6 +68,16 @@ export default function Editor( props) {
     setAnchorEl(anchorEl ? null : event.currentTarget);
   };
 
+  const setHtmlAndUpdateUnaligned = (newHtmlPerf) => {
+    const _alignmentData = epiteleteHtml.getPipelineData(bookCode)
+    const nextUnalignedData = getFlatWordObj(_alignmentData?.unalignedWords)
+    const diffUnaligned = Object.keys(orgUnaligned)
+      .filter(x => !nextUnalignedData[x])
+      .concat(Object.keys(nextUnalignedData).filter(x => !orgUnaligned[x]))
+    setBrokenAlignedWords(diffUnaligned)
+    setHtmlPerf(newHtmlPerf)
+  }
+
   const open = Boolean(anchorEl);
   const id = open ? 'simple-popper' : undefined;
 
@@ -82,13 +92,7 @@ export default function Editor( props) {
 
       const perfChanged = !isEqual(htmlPerf, newHtmlPerf);
       if (perfChanged) {
-        const _alignmentData = epiteleteHtml.getPipelineData(bookCode)
-        const nextUnalignedData = getFlatWordObj(_alignmentData?.unalignedWords)
-        const diffUnaligned = Object.keys(orgUnaligned)
-          .filter(x => !nextUnalignedData[x])
-          .concat(Object.keys(nextUnalignedData).filter(x => !orgUnaligned[x]))
-        setBrokenAlignedWords(diffUnaligned)
-        setHtmlPerf(newHtmlPerf)
+        setHtmlAndUpdateUnaligned(newHtmlPerf)
       }
     };
     saveNow()
@@ -102,12 +106,12 @@ export default function Editor( props) {
 
   const undo = async () => {
     const newPerfHtml = await epiteleteHtml.undoHtml(bookCode, readOptions);
-    setHtmlPerf(newPerfHtml);
+    setHtmlAndUpdateUnaligned(newPerfHtml);
   };
 
   const redo = async () => {
     const newPerfHtml = await epiteleteHtml.redoHtml(bookCode, readOptions);
-    setHtmlPerf(newPerfHtml);
+    setHtmlAndUpdateUnaligned(newPerfHtml);
   };
 
   const canUndo = epiteleteHtml?.canUndo(bookCode);
@@ -166,6 +170,7 @@ export default function Editor( props) {
     editable,
     preview
   };
+
   const htmlEditorProps = {
     htmlPerf,
     onHtmlPerf,
@@ -181,7 +186,6 @@ export default function Editor( props) {
     decorators: {},
     verbose,
   };
-
 
   // const graftProps = {
   //   ...htmlEditorProps,
@@ -216,7 +220,7 @@ export default function Editor( props) {
 
   const onReplace = async () => {
     const newPerfHtml = await epiteleteHtml.readHtml(bookCode, readOptions);
-    setHtmlPerf(newPerfHtml);
+    setHtmlAndUpdateUnaligned(newPerfHtml);
   }
 
   const editorSearchReplaceProps = {
