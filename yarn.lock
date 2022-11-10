@@ -4911,19 +4911,19 @@ envinfo@^7.7.3:
   resolved "https://registry.yarnpkg.com/envinfo/-/envinfo-7.8.1.tgz#06377e3e5f4d379fea7ac592d5ad8927e0c4d475"
   integrity sha512-/o+BXHmB7ocbHEAs6F2EnG0ogybVVUdkRunTT2glZU9XAaGmhqskrvKwqXuDfNjEO0LZKWdejEEpnq8aM0tOaw==
 
-epitelete-html@^0.2.15:
-  version "0.2.15"
-  resolved "https://registry.yarnpkg.com/epitelete-html/-/epitelete-html-0.2.15.tgz#4abf49bee220dbbac7fc25ff0bf6966840c27ae2"
-  integrity sha512-dSQzzfhmhJGZdv8DEUW1ONue+2W/6snVcDMaiB8pktENKOJuXX5SXQ8qdSCZucMCUYkbb8Sy/lS43GFxMDABkg==
+epitelete-html@0.2.15-dev.1:
+  version "0.2.15-dev.1"
+  resolved "https://registry.yarnpkg.com/epitelete-html/-/epitelete-html-0.2.15-dev.1.tgz#482ea7978847a1aa42a4e8907ed0ff8d732e91f6"
+  integrity sha512-DnApNvCJ77ttZNlJO5n95BYBFWa1LDNyBgZARsg3I8ccfVP1jqhJt+bNJoWamfP88iCsAEppsp4JxbER7JLGyw==
   dependencies:
     "@babel/core" "^7.17.10"
-    epitelete dev
+    epitelete "0.2.15-dev.1"
     node-html-parser "^5.3.3"
 
-epitelete@dev:
-  version "0.2.14"
-  resolved "https://registry.yarnpkg.com/epitelete/-/epitelete-0.2.14.tgz#646133133f920d603d90d8cfcb4f27f6be6005b8"
-  integrity sha512-1VuCu6tTGQlGHyno10CSuMallU+CkW9gizHi38Pg9p/KFTvxfpNaoXJ37q7PmvmhS8ZFZNxyp+zkR1FgKJtUEA==
+epitelete@0.2.15-dev.1:
+  version "0.2.15-dev.1"
+  resolved "https://registry.yarnpkg.com/epitelete/-/epitelete-0.2.15-dev.1.tgz#98a0627db06ee4a30ba96124008a5d13dd773992"
+  integrity sha512-hPcwomj4aBR5ldWqSheEVhb5rFqqxba1wSRxIBpE6d7LmC9bpCAuNLKiiH3+et3BIkaJzSsZhqR0be5Mg3id0g==
   dependencies:
     "@babel/core" "^7.19.0"
     lodash "4.17.21"

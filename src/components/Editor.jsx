@@ -4,13 +4,13 @@ import { useDeepCompareCallback, useDeepCompareEffect } from "use-deep-compare";
 import isEqual from 'lodash.isequal';
 import { HtmlPerfEditor } from "@xelah/type-perf-html";
 import EpiteleteHtml from "epitelete-html";
-
 import { Skeleton, Stack } from "@mui/material";
 import useEditorState from "../hooks/useEditorState";
 import Section from "./Section";
 import SectionHeading from "./SectionHeading";
 import SectionBody from "./SectionBody";
 import Buttons from "./Buttons"
+import EditorSearchReplace from './EditorSearchReplace';
 
 // import GraftPopup from "./GraftPopup"
 
@@ -204,8 +204,20 @@ export default function Editor( props) {
   //   </>
   // );
 
+  const onReplace = async () => {
+    const newPerfHtml = await epiteleteHtml.readHtml(bookCode, readOptions);
+    setHtmlPerf(newPerfHtml);
+  }
+
+  const editorSearchReplaceProps = {
+    epiteleteHtml,
+    bookCode,
+    onReplace,
+  }
+
   return (
     <div key="1" className="Editor" style={style}>
+      <EditorSearchReplace {...editorSearchReplaceProps}></EditorSearchReplace>
       <Buttons {...buttonsProps} />
       {sequenceId && htmlPerf ? <HtmlPerfEditor {...htmlEditorProps} /> : skeleton}
       {/* <GraftPopup {...graftProps} /> */}
