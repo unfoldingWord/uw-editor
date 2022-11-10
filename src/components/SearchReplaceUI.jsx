@@ -52,10 +52,10 @@ function SearchReplaceUI(props) {
       <Button onClick={() => onReplaceAll({ target, replacement })}>
         Replace All
       </Button>
-      <Button onClick={() => onReplaceGroup({ target, replacement, group: _groups[groupKey] })}>
+      <Button onClick={() => onReplaceGroup({ target, replacement, group: _groups[groupKey] })} disabled={!groupKey}>
         Replace Group
       </Button>
-      <Button onClick={() => onReplaceResult({ target, replacement, result: _groups[groupKey]?.results?.[0] })}>
+      <Button onClick={() => onReplaceResult({ target, replacement, result: _groups[groupKey]?.results?.[0] })} disabled={!groupKey}>
         Replace First
       </Button>
       {groupKey && <Accordion>
