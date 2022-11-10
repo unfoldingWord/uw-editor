@@ -88,7 +88,7 @@ export default function Editor( props) {
           .filter(x => !nextUnalignedData[x])
           .concat(Object.keys(nextUnalignedData).filter(x => !orgUnaligned[x]))
         setBrokenAlignedWords(diffUnaligned)
-        setHtmlPerf(newHtmlPerf);
+        setHtmlPerf(newHtmlPerf)
       }
     };
     saveNow()
