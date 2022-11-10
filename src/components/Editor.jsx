@@ -11,6 +11,8 @@ import Section from "./Section";
 import SectionHeading from "./SectionHeading";
 import SectionBody from "./SectionBody";
 import Buttons from "./Buttons"
+import Box from '@mui/material/Box';
+import Popper from '@mui/material/Popper';
 
 // import GraftPopup from "./GraftPopup"
 
@@ -21,7 +23,8 @@ export default function Editor( props) {
   // const [isSaving, startSaving] = useTransition();
   const [htmlPerf, setHtmlPerf] = useState();
   const [orgUnaligned, setOrgUnaligned] = useState();
-  const [brokenAlignedWords, setBrokenAlignedWords] = useState({});
+  const [brokenAlignedWords, setBrokenAlignedWords] = useState();
+  const [anchorEl, setAnchorEl] = React.useState(null);
 
   const bookCode = bookId.toUpperCase()
   const [lastSaveHistoryLength, setLastSaveHistoryLength] = useState(epiteleteHtml?.history[bookCode] ? epiteleteHtml.history[bookCode].stack.length : 1)
@@ -40,9 +43,8 @@ export default function Editor( props) {
     if (obj) {
       Object.entries(obj).forEach(([chNum, chObj]) => {
         Object.entries(chObj).forEach(([vNum, verseArr]) => {
-          console.log(verseArr)
           verseArr.forEach(wObj => {
-            resArray.push({ id: `${chNum}.${vNum}.${wObj?.word}`, wObj })
+            resArray.push({ id: `${chNum}:${vNum}-${wObj?.word}`, wObj })
           })
         })
       })
@@ -60,6 +62,14 @@ export default function Editor( props) {
       });
     }
   }, [epiteleteHtml, bookCode, setOrgUnaligned, setHtmlPerf]);
+
+  
+  const handleUnalignedClick = (event) => {
+    setAnchorEl(anchorEl ? null : event.currentTarget);
+  };
+
+  const open = Boolean(anchorEl);
+  const id = open ? 'simple-popper' : undefined;
 
   const onHtmlPerf = useDeepCompareCallback(( _htmlPerf, { sequenceId }) => {
     const perfChanged = !isEqual(htmlPerf, _htmlPerf);
@@ -186,8 +196,8 @@ export default function Editor( props) {
     blockable,
     editable,
     preview,
-    allAligned: (brokenAlignedWords.length===0),
-    onShowUnaligned: () => console.log("onShowUnaligned"),
+    allAligned: (!brokenAlignedWords || brokenAlignedWords.length===0),
+    onShowUnaligned: handleUnalignedClick,
     undo,
     redo,
     canUndo,
@@ -207,6 +217,14 @@ export default function Editor( props) {
   return (
     <div key="1" className="Editor" style={style}>
       <Buttons {...buttonsProps} />
+      <Popper id={id} open={open} anchorEl={anchorEl}>
+        <Box sx={{ border: 1, p: 1, bgcolor: 'background.paper' }}>
+          List of words with broken alignment:
+          <Box>
+            {brokenAlignedWords && brokenAlignedWords.map((str,i) => <li key={i}>{str}</li>)}
+          </Box>
+        </Box>
+      </Popper>
       {sequenceId && htmlPerf ? <HtmlPerfEditor {...htmlEditorProps} /> : skeleton}
       {/* <GraftPopup {...graftProps} /> */}
     </div>
