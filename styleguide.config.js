@@ -13,6 +13,7 @@ module.exports = {
     'src/components/PkEditor.jsx',
     'src/components/UsfmEditor.jsx',
     'src/components/Editor.jsx',
+    'src/components/SearchAndReplace.jsx'
   ],
   getComponentPathLine: componentPath => {
     const name = path.basename(componentPath, '.jsx');
