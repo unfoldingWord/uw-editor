@@ -11,7 +11,7 @@ function SearchReplaceUI(props) {
     // onClickGroup,
     // onClickResult,
     onReplaceAll,
-    // onReplaceGroup,
+    onReplaceGroup,
     onReplaceResult,
     // config = { isRegex: true },
   } = props;
@@ -52,7 +52,7 @@ function SearchReplaceUI(props) {
       <Button onClick={() => onReplaceAll({ target, replacement })}>
         Replace All
       </Button>
-      <Button onClick={() => onReplaceResult({ target, replacement, group: _groups[groupKey] })}>
+      <Button onClick={() => onReplaceGroup({ target, replacement, group: _groups[groupKey] })}>
         Replace Group
       </Button>
       <Button onClick={() => onReplaceResult({ target, replacement, result: _groups[groupKey]?.results?.[0] })}>
@@ -81,6 +81,7 @@ SearchReplaceUI.propTypes = {
   groups: PropTypes.object,
   onReplaceAll: PropTypes.func,
   onReplaceResult: PropTypes.func,
+  onReplaceGroup: PropTypes.func,
   onSearch: PropTypes.func,
   onClickGroup: PropTypes.func,
   onClickResult: PropTypes.func,
