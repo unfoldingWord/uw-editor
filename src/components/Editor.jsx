@@ -4,7 +4,8 @@ import { useDeepCompareCallback, useDeepCompareEffect } from "use-deep-compare";
 import isEqual from 'lodash.isequal';
 import { HtmlPerfEditor } from "@xelah/type-perf-html";
 import EpiteleteHtml from "epitelete-html";
-import { Skeleton, Stack } from "@mui/material";
+import { Button, Skeleton, Stack } from "@mui/material";
+import { PictureAsPdf } from '@mui/icons-material';
 import useEditorState from "../hooks/useEditorState";
 import Section from "./Section";
 import SectionHeading from "./SectionHeading";
@@ -17,7 +18,7 @@ import Popper from '@mui/material/Popper';
 // import GraftPopup from "./GraftPopup"
 
 export default function Editor( props) {
-  const { onSave, epiteleteHtml, bookId, verbose } = props;
+  const { onSave, epiteleteHtml, bookId, editable = true, verbose } = props;
   // const [graftSequenceId, setGraftSequenceId] = useState(null);
 
   // const [isSaving, startSaving] = useTransition();
@@ -130,8 +131,8 @@ export default function Editor( props) {
     state: {
       sectionable,
       blockable,
-      editable,
-      preview,
+      editable: _editable,
+      preview: _preview,
     },
     actions: {
       setSequenceIds,
@@ -167,8 +168,8 @@ export default function Editor( props) {
   const options = {
     sectionable,
     blockable,
-    editable,
-    preview
+    editable: _editable && editable,
+    preview: _preview || editable,
   };
 
   const htmlEditorProps = {
@@ -198,8 +199,8 @@ export default function Editor( props) {
   const buttonsProps = {
     sectionable,
     blockable,
-    editable,
-    preview,
+    editable: _editable && editable,
+    preview: _preview || !editable,
     allAligned: (!brokenAlignedWords || brokenAlignedWords.length===0),
     onShowUnaligned: handleUnalignedClick,
     undo,
@@ -226,21 +227,32 @@ export default function Editor( props) {
   const editorSearchReplaceProps = {
     epiteleteHtml,
     bookCode,
+    editable: _editable && editable && !_preview,
     onReplace,
   }
 
   return (
     <div key="1" className="Editor" style={style}>
       <EditorSearchReplace {...editorSearchReplaceProps}></EditorSearchReplace>
-      <Buttons {...buttonsProps} />
-      <Popper id={id} open={open} anchorEl={anchorEl}>
+      {_preview || !editable && (
+        <Button
+          data-test-id="ButtonPreview"
+          value="alignment"
+          aria-label="pdf-preview"
+          title="pdf-preview"
+        >
+          <PictureAsPdf />
+        </Button>
+      )}
+      {editable && <Buttons {...buttonsProps} />}
+      {editable && (<Popper id={id} open={open} anchorEl={anchorEl}>
         <Box sx={{ border: 1, p: 1, bgcolor: 'background.paper' }}>
           List of words with broken alignment:
           <Box>
             {brokenAlignedWords && brokenAlignedWords.map((str,i) => <li key={i}>{str}</li>)}
           </Box>
         </Box>
-      </Popper>
+      </Popper>)}
       {sequenceId && htmlPerf ? <HtmlPerfEditor {...htmlEditorProps} /> : skeleton}
       {/* <GraftPopup {...graftProps} /> */}
     </div>
@@ -251,5 +263,6 @@ Editor.propTypes = {
   onSave: PropTypes.func,
   epiteleteHtml: PropTypes.instanceOf(EpiteleteHtml),
   bookId: PropTypes.string,
+  editable: PropTypes.bool,
   verbose: PropTypes.bool,
 };

@@ -7,6 +7,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 function SearchReplaceUI(props) {
   const {
     groups,
+    editable,
     onSearch,
     // onClickGroup,
     // onClickResult,
@@ -40,24 +41,24 @@ function SearchReplaceUI(props) {
         value={target}
         onChange={handleSearchChange}
       />
-      <TextField
+      {editable && (<TextField
         id="outlined-multiline-flexible"
         label="Replace"
         multiline
         maxRows={4}
         value={replacement}
         onChange={handleRepChange}
-      />
+      />)}
       <Button onClick={() => onSearch({ target, replacement })}>Search</Button>
-      <Button onClick={() => onReplaceAll({ target, replacement })}>
+      {editable && (<Button onClick={() => onReplaceAll({ target, replacement })}>
         Replace All
-      </Button>
-      <Button onClick={() => onReplaceGroup({ target, replacement, group: _groups[groupKey] })} disabled={!groupKey}>
+      </Button>)}
+      {editable && (<Button onClick={() => onReplaceGroup({ target, replacement, group: _groups[groupKey] })} disabled={!groupKey}>
         Replace Group
-      </Button>
-      <Button onClick={() => onReplaceResult({ target, replacement, result: _groups[groupKey]?.results?.[0] })} disabled={!groupKey}>
+      </Button>)}
+      {editable && (<Button onClick={() => onReplaceResult({ target, replacement, result: _groups[groupKey]?.results?.[0] })} disabled={!groupKey}>
         Replace First
-      </Button>
+      </Button>)}
       {groupKey && <Accordion>
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
@@ -79,6 +80,7 @@ export default SearchReplaceUI;
 
 SearchReplaceUI.propTypes = {
   groups: PropTypes.object,
+  editable: PropTypes.bool,
   onReplaceAll: PropTypes.func,
   onReplaceResult: PropTypes.func,
   onReplaceGroup: PropTypes.func,

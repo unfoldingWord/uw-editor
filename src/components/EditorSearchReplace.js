@@ -6,6 +6,7 @@ import EpiteleteHtml from "epitelete-html";
 export default function EditorSearchReplace({
   epiteleteHtml,
   bookCode,
+  editable,
   onReplace: _onReplace,
 }) {
 
@@ -79,6 +80,7 @@ export default function EditorSearchReplace({
       title: `${epiteleteHtml.docSetId} - ${bookCode}`,
     },
     sourcesKeys: epiteleteHtml ? [epiteleteHtml.docSetId] : [],
+    editable,
     onReplace,
     onSearch,
   };
@@ -88,5 +90,6 @@ export default function EditorSearchReplace({
 EditorSearchReplace.propTypes = {
   epiteleteHtml: PropTypes.instanceOf(EpiteleteHtml),
   bookCode: PropTypes.string,
+  editable: PropTypes.bool,
   onReplace: PropTypes.func,
 };

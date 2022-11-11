@@ -8,6 +8,7 @@ export default function SearchReplace(props) {
   const {
     sourcesKeys,
     metadata,
+    editable,
     onSearch: _onSearch,
     onReplace: _onReplace,
     onClickGroup,
@@ -123,6 +124,7 @@ export default function SearchReplace(props) {
 
   const srProps = {
     groups,
+    editable,
     onSearch,
     onClickGroup,
     onClickResult,
@@ -141,6 +143,7 @@ export default function SearchReplace(props) {
 SearchReplace.propTypes = {
   sourcesKeys: PropTypes.arrayOf(PropTypes.string),
   metadata: PropTypes.objectOf(PropTypes.any),
+  editable: PropTypes.bool,
   onReplace: PropTypes.func,
   onSearch: PropTypes.func,
   onClickGroup: PropTypes.func,

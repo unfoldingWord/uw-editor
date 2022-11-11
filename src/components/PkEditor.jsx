@@ -24,6 +24,7 @@ export default function PkEditor( props) {
     ...props,
     bookId,
     epiteleteHtml,
+    editable: false,
   };
 
   return (<Editor { ...editorProps } />)
