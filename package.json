@@ -21,7 +21,8 @@
   "dependencies": {
     "@xelah/type-perf-html": "^1.0.0",
     "epitelete-html": "0.2.15-dev.1",
-    "proskomma-react-hooks": "^2.4.0"
+    "proskomma-react-hooks": "^2.4.0",
+    "react-highlight-words": "^0.18.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.17.10",
