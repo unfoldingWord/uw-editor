@@ -19,6 +19,7 @@
     "translation-helps-rcl": "3.3.4-rc.2"
   },
   "dependencies": {
+    "@mui/lab": "^5.0.0-alpha.107",
     "@xelah/type-perf-html": "^1.0.0",
     "epitelete-html": "0.2.15-dev.1",
     "proskomma-react-hooks": "^2.4.0",
@@ -35,7 +36,7 @@
     "@babel/preset-react": "^7.12.10",
     "@babel/runtime": "7.13.8",
     "@mui/icons-material": "^5.10.9",
-    "@mui/material": "^5.8.7",
+    "@mui/material": "^5.10.13",
     "@mui/styled-engine": "npm:@mui/styled-engine-sc@latest",
     "@mui/styles": "^5.8.7",
     "@testing-library/jest-dom": "^5.11.4",
