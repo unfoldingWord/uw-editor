@@ -30,7 +30,16 @@ export default function PkEditor( props) {
 };
 
 PkEditor.propTypes = {
+  /** Method to call when save button is pressed */
   onSave: PropTypes.func,
+  /** docSetId identifies a set of documents in proskomma, usually contains org and language code */
   docSetId: PropTypes.string,
-  bookId: PropTypes.string, 
+  /** bookId to identify the content in the editor */
+  bookId: PropTypes.string,
+  /** Whether to show extra info in the js console */
+  verbose: PropTypes.bool,
 };
+
+PkEditor.defaultProps = {
+  verbose: false
+}
