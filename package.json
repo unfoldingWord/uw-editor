@@ -10,17 +10,17 @@
   },
   "private": false,
   "peerDependencies": {
-    "@mui/material": "^5.10.12",
-    "@mui/styles": "^5.10.10",
     "@mui/icons-material": "^5.10.9",
+    "@mui/material": "^5.10.12",
     "@mui/styled-engine": "npm:@mui/styled-engine-sc@latest",
+    "@mui/styles": "^5.10.10",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "translation-helps-rcl": "3.3.4-rc.2"
   },
   "dependencies": {
     "@xelah/type-perf-html": "^1.0.0",
-    "epitelete-html": "^0.2.10",
+    "epitelete-html": "0.2.15-dev.1",
     "proskomma-react-hooks": "^2.4.0"
   },
   "devDependencies": {
@@ -33,10 +33,10 @@
     "@babel/preset-env": "^7.17.10",
     "@babel/preset-react": "^7.12.10",
     "@babel/runtime": "7.13.8",
+    "@mui/icons-material": "^5.10.9",
     "@mui/material": "^5.8.7",
     "@mui/styled-engine": "npm:@mui/styled-engine-sc@latest",
     "@mui/styles": "^5.8.7",
-    "@mui/icons-material": "^5.10.9",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
@@ -57,8 +57,8 @@
     "react-scripts": "^5.0.1",
     "react-styleguidist": "^13.0.0",
     "styled-components": "^5.2.1",
-    "webpack-cli": "^4.10.0",
-    "translation-helps-rcl": "3.3.4-rc.3"
+    "translation-helps-rcl": "3.3.4-rc.3",
+    "webpack-cli": "^4.10.0"
   },
   "scripts": {
     "start": "yarn && npx styleguidist server",
