@@ -51,9 +51,19 @@ function Component () {
     ready && new EpiteleteHtml({ proskomma, docSetId, options: { historySize: 100 } })
   ), [proskomma, ready, docSetId]);
   
+  const bookId = 'tit'
+  const chapter = 2
+  const bcvQuery = { 
+    book: { 
+      [bookId]: {
+        ch: { [chapter] : {} } 
+      } 
+    } 
+  }
+
   const editorProps = {
     epiteleteHtml,
-    bookId: 'tit',
+    bcvQuery,
     onSave,
     verbose
   }

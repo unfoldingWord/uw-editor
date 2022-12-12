@@ -1,0 +1,11 @@
+{
+  "version": "v1",
+  "packages": {
+    "epitelete-html": {
+      "version": "0.2.14-alpha2",
+      "signature": "5e65246e33f4cca05a5ba1a44ac897ff",
+      "file": true,
+      "replaced": "^0.2.10"
+    }
+  }
+}

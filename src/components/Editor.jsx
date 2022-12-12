@@ -15,20 +15,26 @@ import Buttons from "./Buttons"
 // import GraftPopup from "./GraftPopup"
 
 export default function Editor( props) {
-  const { onSave, epiteleteHtml, bookId, verbose } = props;
+  const { onSave, epiteleteHtml, bookId, bcvQuery, verbose } = props;
   // const [graftSequenceId, setGraftSequenceId] = useState(null);
 
   // const [isSaving, startSaving] = useTransition();
   const [htmlPerf, setHtmlPerf] = useState();
 
-  const bookCode = bookId.toUpperCase()
+  let _bookId = bookId
+
+  if (bcvQuery) {
+    const books = Object.keys(bcvQuery?.book)
+    _bookId = books[0] || bookId || ""
+  }
+  
+  const bookCode = _bookId.toUpperCase()
   const [lastSaveHistoryLength, setLastSaveHistoryLength] = useState(epiteleteHtml?.history[bookCode] ? epiteleteHtml.history[bookCode].stack.length : 1)
   const readOptions = { readPipeline: "stripAlignment" }
 
   useDeepCompareEffect(() => {
     if (epiteleteHtml) {
-      //        epiteleteHtml.readHtml(bookCode,{},bcvQuery).then((_htmlPerf) => {
-      epiteleteHtml.readHtml( bookCode, readOptions ).then((_htmlPerf) => {
+      epiteleteHtml.readHtml( bookCode, readOptions, bcvQuery ).then((_htmlPerf) => {
         setHtmlPerf(_htmlPerf);
       });
     }
@@ -40,7 +46,7 @@ export default function Editor( props) {
 
     const saveNow = async () => {
       const writeOptions = { writePipeline: "mergeAlignment", readPipeline: "stripAlignment" }
-      const newHtmlPerf = await epiteleteHtml.writeHtml( bookCode, sequenceId, _htmlPerf, writeOptions);
+      const newHtmlPerf = await epiteleteHtml.writeHtml( bookCode, sequenceId, _htmlPerf, writeOptions, bcvQuery);
       if (verbose) console.log({ info: "Saved sequenceId", bookCode, sequenceId });
 
       const perfChanged = !isEqual(htmlPerf, newHtmlPerf);
@@ -183,6 +189,8 @@ Editor.propTypes = {
   epiteleteHtml: PropTypes.instanceOf(EpiteleteHtml),
   /** bookId to identify the content in the editor */
   bookId: PropTypes.string,
+  /** bcvQuery to identify verses and chapters as content in the editor */
+  bcvQuery: PropTypes.any,
   /** Whether to show extra info in the js console */
   verbose: PropTypes.bool,
 };
