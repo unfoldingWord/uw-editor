@@ -1,14 +1,13 @@
 {
   "name": "uw-editor",
   "description": "A React Component Library for editing PERF.",
-  "version": "0.1.12-alpha",
+  "version": "0.1.12",
   "homepage": "https://uw-editor.netlify.app/",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/unfoldingword/uw-editor"
   },
-  "private": false,
   "peerDependencies": {
     "@mui/icons-material": "^5.10.9",
     "@mui/material": "^5.10.12",
