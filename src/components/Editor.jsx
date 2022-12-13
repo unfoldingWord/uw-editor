@@ -232,8 +232,16 @@ export default function Editor( props) {
 };
 
 Editor.propTypes = {
+  /** Method to call when save button is pressed */
   onSave: PropTypes.func,
+  /** Instance of EpiteleteHtml class */
   epiteleteHtml: PropTypes.instanceOf(EpiteleteHtml),
+  /** bookId to identify the content in the editor */
   bookId: PropTypes.string,
+  /** Whether to show extra info in the js console */
   verbose: PropTypes.bool,
 };
+
+Editor.defaultProps = {
+  verbose: false
+}
