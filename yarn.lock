@@ -6905,26 +6905,26 @@ __metadata:
   languageName: node
   linkType: hard
 
-"epitelete-html@npm:^0.2.10":
-  version: 0.2.10
-  resolution: "epitelete-html@npm:0.2.10"
+"epitelete-html@npm:^0.2.15":
+  version: 0.2.15
+  resolution: "epitelete-html@npm:0.2.15"
   dependencies:
     "@babel/core": ^7.17.10
-    epitelete: ^0.2.10
+    epitelete: dev
     node-html-parser: ^5.3.3
-  checksum: 39ec9490a5a40a89fda326ce7901f07303ceecfdd470bdf9148cfb1a7cc289836fa528c1e911e1c51a70b980afce2bcd371bfa2af9554ce561e77978938b05ae
+  checksum: da4549e7f6563f9b450681b7d4b2367e66784201b29d56661cf64c34bfa7fd3770000f355b7bb7c19a50b6988c924e2c94c1fab6ffcb183987806c2e8a5f5b3e
   languageName: node
   linkType: hard
 
-"epitelete@npm:^0.2.10":
-  version: 0.2.10
-  resolution: "epitelete@npm:0.2.10"
+"epitelete@npm:dev":
+  version: 0.2.15-dev.1
+  resolution: "epitelete@npm:0.2.15-dev.1"
   dependencies:
     "@babel/core": ^7.19.0
     lodash: 4.17.21
     pipeline-handler: ^1.1.0
     proskomma-json-tools: ^0.5.7
-  checksum: b0c01241a4b520bddbd4a6d8c140f59b71c31826b74bdf22f456e84844d29fa14c640704cd2bebb6c48f0b1fe2d7cc8aaaa535a672dcf8d0d228906bda2f69c7
+  checksum: 6b40f9ec4d1826abfb1d80756f9305c0263cf642c808013777381bdfedd52c371ef9b128d4d33d6134f42f788ef88ad6f54f069e28627fee9a4c4c22d92a0837
   languageName: node
   linkType: hard
 
@@ -16119,7 +16119,7 @@ __metadata:
     babel-loader: ^8.2.2
     crypto-browserify: ^3.12.0
     css-loader: ^6.7.1
-    epitelete-html: ^0.2.10
+    epitelete-html: ^0.2.15
     eslint: ^7.32.0
     eslint-config-prettier: ^8.4.0
     eslint-plugin-import: ^2.26.0

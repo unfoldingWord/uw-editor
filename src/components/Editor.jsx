@@ -44,7 +44,7 @@ export default function Editor( props) {
       Object.entries(obj).forEach(([chNum, chObj]) => {
         Object.entries(chObj).forEach(([vNum, verseArr]) => {
           verseArr.forEach(wObj => {
-            resArray.push({ id: `${chNum}:${vNum}-${wObj?.word}`, wObj })
+            resArray.push({ id: `${chNum}:${vNum}-${wObj?.word}-${wObj?.occurrence}/${wObj?.totalOccurrences}`, wObj })
           })
         })
       })
