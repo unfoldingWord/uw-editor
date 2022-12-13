@@ -29,15 +29,18 @@ export default function Editor( props) {
     if (epiteleteHtml) {
       //        epiteleteHtml.readHtml(bookCode,{},bcvQuery).then((_htmlPerf) => {
       epiteleteHtml.readHtml( bookCode, readOptions ).then((_htmlPerf) => {
+        console.log(_htmlPerf)
         setHtmlPerf(_htmlPerf);
       });
     }
   }, [epiteleteHtml, bookCode]);
 
   const onHtmlPerf = useDeepCompareCallback(( _htmlPerf, { sequenceId }) => {
+
     const perfChanged = !isEqual(htmlPerf, _htmlPerf);
     if (perfChanged) setHtmlPerf(_htmlPerf);
 
+    console.log('onhtmlperf', perfChanged)
     const saveNow = async () => {
       const writeOptions = { writePipeline: "mergeAlignment", readPipeline: "stripAlignment" }
       const newHtmlPerf = await epiteleteHtml.writeHtml( bookCode, sequenceId, _htmlPerf, writeOptions);
@@ -158,6 +161,7 @@ export default function Editor( props) {
     setToggles,
     canSave,
     onSave:handleSave,
+    showToggles:false
   }
 
   return (

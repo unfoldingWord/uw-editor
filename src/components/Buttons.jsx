@@ -12,7 +12,7 @@ import PropTypes from 'prop-types';
 
 
 export default function Buttons(props) {
-  const { canUndo, canRedo, setToggles, undo, redo, onSave, canSave } = props;
+  const { canUndo, canRedo, setToggles, undo, redo, onSave, canSave, showToggles } = props;
   const togglesAll = useMemo(
     () => ["sectionable", "blockable", "editable", "preview"],
     []
@@ -53,22 +53,34 @@ export default function Buttons(props) {
       className="buttons"
       sx={{mb:2}}
     >
-      <ToggleButton
-        data-test-id="ToggleButtonSectionable"
-        value="sectionable"
-        aria-label="sectionable"
-        title="Sectionable"
-      >
-        <ViewStream />
-      </ToggleButton>
-      <ToggleButton
-        data-test-id="ToggleButtonBlockable"
-        value="blockable"
-        aria-label="blockable"
-        title="Blockable"
-      >
-        <Subject />
-      </ToggleButton>
+      { showToggles ?
+        <>
+          <ToggleButton
+            data-test-id="ToggleButtonSectionable"
+            value="sectionable"
+            aria-label="sectionable"
+            title="Sectionable"
+          >
+            <ViewStream />
+          </ToggleButton>
+          <ToggleButton
+            data-test-id="ToggleButtonBlockable"
+            value="blockable"
+            aria-label="blockable"
+            title="Blockable"
+          >
+            <Subject />
+          </ToggleButton>
+          <ToggleButton
+            data-test-id="ToggleButtonPreview"
+            value="preview"
+            aria-label="preview"
+            title="Preview"
+          >
+            <Preview />
+          </ToggleButton>
+        </>
+        : <></> }
       <ToggleButton
         data-test-id="ToggleButtonEditable"
         value="editable"
@@ -76,14 +88,6 @@ export default function Buttons(props) {
         title="Editable"
       >
         <Edit />
-      </ToggleButton>
-      <ToggleButton
-        data-test-id="ToggleButtonPreview"
-        value="preview"
-        aria-label="preview"
-        title="Preview"
-      >
-        <Preview />
       </ToggleButton>
       <ToggleButton
         data-test-id="Undo"
@@ -128,4 +132,5 @@ Buttons.propTypes = {
   editable: PropTypes.bool,
   preview: PropTypes.bool,
   canSave: PropTypes.bool,
+  showToggles: PropTypes.bool,
 };

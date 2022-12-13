@@ -13,11 +13,11 @@ import '../../node_modules/@xelah/type-perf-html/build/components/HtmlSequenceEd
 const urlDocument = ({ selectors, bookCode, bookName, filename, ...props}) => ({
   selectors,
   bookCode, 
-  url: `https://git.door43.org/${selectors.org}/${selectors.lang}_${selectors.abbr}/raw/branch/master/${filename}`,
+  url: `/86-TITfraLSG.usfm`,
 });
 
 const documents = [
-  urlDocument({ bookCode: 'tit', filename: '57-TIT.usfm', selectors: { org: 'unfoldingWord', lang: 'en', abbr: 'ult' } }),
+  urlDocument({ bookCode: 'tit', filename: 'fr_lsg_tit_book.usfm', selectors: { org: 'KentR1235', lang: 'fr', abbr: 'lsg_tit_book' } }),
 ];
 
 function Component () {
@@ -45,7 +45,7 @@ function Component () {
     console.log(usfmText)
   }
 
-  const docSetId = 'unfoldingWord/en_ult'
+  const docSetId = 'KentR1235/fr_lsg_tit_book'
   
   const epiteleteHtml = useDeepCompareMemo(() => (
     ready && new EpiteleteHtml({ proskomma, docSetId, options: { historySize: 100 } })
