@@ -14,11 +14,11 @@ import Buttons from "./Buttons"
 import Box from '@mui/material/Box';
 import Popper from '@mui/material/Popper';
 
-// import GraftPopup from "./GraftPopup"
+import GraftPopup from "./GraftPopup"
 
 export default function Editor( props) {
   const { onSave, epiteleteHtml, bookId, verbose } = props;
-  // const [graftSequenceId, setGraftSequenceId] = useState(null);
+  const [graftSequenceId, setGraftSequenceId] = useState(null);
 
   // const [isSaving, startSaving] = useTransition();
   const [htmlPerf, setHtmlPerf] = useState();
@@ -69,13 +69,25 @@ export default function Editor( props) {
     setAnchorEl(anchorEl ? null : event.currentTarget);
   };
 
+  const setHtmlAndUpdateUnaligned = (newHtmlPerf) => {
+    const _alignmentData = epiteleteHtml.getPipelineData(bookCode)
+    const nextUnalignedData = getFlatWordObj(_alignmentData?.unalignedWords)
+    const diffUnaligned = Object.keys(orgUnaligned)
+      .filter(x => !nextUnalignedData[x])
+      .concat(Object.keys(nextUnalignedData).filter(x => !orgUnaligned[x]))
+    setBrokenAlignedWords(diffUnaligned)
+    setHtmlPerf(newHtmlPerf)
+  }
+
   const popperOpen = Boolean(anchorEl);
   const id = popperOpen ? 'simple-popper' : undefined;
 
   const onHtmlPerf = useDeepCompareCallback(( _htmlPerf, { sequenceId }) => {
+
     const perfChanged = !isEqual(htmlPerf, _htmlPerf);
     if (perfChanged) setHtmlPerf(_htmlPerf);
 
+    console.log('onhtmlperf', perfChanged)
     const saveNow = async () => {
       const writeOptions = { writePipeline: "mergeAlignment", readPipeline: "stripAlignment" }
       const newHtmlPerf = await epiteleteHtml.writeHtml( bookCode, sequenceId, _htmlPerf, writeOptions);
@@ -83,13 +95,7 @@ export default function Editor( props) {
 
       const perfChanged = !isEqual(htmlPerf, newHtmlPerf);
       if (perfChanged) {
-        const _alignmentData = epiteleteHtml.getPipelineData(bookCode)
-        const nextUnalignedData = getFlatWordObj(_alignmentData?.unalignedWords)
-        const diffUnaligned = Object.keys(orgUnaligned)
-          .filter(x => !nextUnalignedData[x])
-          .concat(Object.keys(nextUnalignedData).filter(x => !orgUnaligned[x]))
-        setBrokenAlignedWords(diffUnaligned)
-        setHtmlPerf(newHtmlPerf)
+        setHtmlAndUpdateUnaligned(newHtmlPerf)
       }
     };
     saveNow()
@@ -103,25 +109,25 @@ export default function Editor( props) {
 
   const undo = async () => {
     const newPerfHtml = await epiteleteHtml.undoHtml(bookCode, readOptions);
-    setHtmlPerf(newPerfHtml);
+    setHtmlAndUpdateUnaligned(newPerfHtml);
   };
 
   const redo = async () => {
     const newPerfHtml = await epiteleteHtml.redoHtml(bookCode, readOptions);
-    setHtmlPerf(newPerfHtml);
+    setHtmlAndUpdateUnaligned(newPerfHtml);
   };
 
   const canUndo = epiteleteHtml?.canUndo(bookCode);
   const canRedo = epiteleteHtml?.canRedo(bookCode);
   const canSave = epiteleteHtml?.history[bookCode] && epiteleteHtml.history[bookCode].stack.length > lastSaveHistoryLength;
 
-  // const handlers = {
-  //   onBlockClick: ({ element }) => {
-  //     const _sequenceId = element.dataset.target;
-  //     // if (_sequenceId && !isInline) addSequenceId(_sequenceId);
-  //     if (_sequenceId) setGraftSequenceId(_sequenceId);
-  //   },
-  // };
+  const handlers = {
+    onBlockClick: ({ element }) => {
+      const _sequenceId = element.dataset.target;
+      // if (_sequenceId && !isInline) addSequenceId(_sequenceId);
+      if (_sequenceId) setGraftSequenceId(_sequenceId);
+    },
+  };
 
   const {
     state: {
@@ -178,19 +184,19 @@ export default function Editor( props) {
       sectionBody: SectionBody,
     },
     options,
-    // handlers,
+    handlers,
     decorators: {},
     verbose,
   };
 
 
-  // const graftProps = {
-  //   ...htmlEditorProps,
-  //   options: { ...options, sectionable: false },
-  //   sequenceIds: [graftSequenceId],
-  //   graftSequenceId,
-  //   setGraftSequenceId,
-  // };
+  const graftProps = {
+    ...htmlEditorProps,
+    options: { ...options, sectionable: false },
+    sequenceIds: [graftSequenceId],
+    graftSequenceId,
+    setGraftSequenceId,
+  };
 
   const buttonsProps = {
     sectionable,
@@ -206,14 +212,8 @@ export default function Editor( props) {
     setToggles,
     canSave,
     onSave: handleSave,
+    showToggles:false
   }
-
-  // const graftSequenceEditor = (
-  //   <>
-  //     <h2>Graft Sequence Editor</h2>
-  //     <HtmlPerfEditor key="2" {...graftProps} />
-  //   </>
-  // );
 
   return (
     <div key="1" className="Editor" style={style}>
@@ -227,7 +227,7 @@ export default function Editor( props) {
         </Box>
       </Popper>
       {sequenceId && htmlPerf ? <HtmlPerfEditor {...htmlEditorProps} /> : skeleton}
-      {/* <GraftPopup {...graftProps} /> */}
+      <GraftPopup {...graftProps} />
     </div>
   );
 };
