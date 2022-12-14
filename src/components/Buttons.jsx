@@ -13,6 +13,7 @@ import {
 } from '@mui/icons-material'
 import PropTypes from 'prop-types';
 
+import { useTheme } from '@mui/material/styles';
 
 export default function Buttons(props) {
   const { 
@@ -31,6 +32,7 @@ export default function Buttons(props) {
     () => ["sectionable", "blockable", "editable", "preview"],
     []
   );
+  const theme = useTheme()
   const toggles = togglesAll.filter((toggle) => props[toggle]);
 
   const handleToggles = useCallback(
@@ -71,7 +73,13 @@ export default function Buttons(props) {
       onChange={handleToggles}
       aria-label="text formatting"
       className="buttons"
-      sx={{mb:2}}
+      sx={{
+        mb:2,
+        position: 'sticky',
+        top: 0,
+        zIndex: 'appBar',
+        background: theme.palette.background.default
+      }}
     >
       { showToggles ?
         <>
