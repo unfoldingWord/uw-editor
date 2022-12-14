@@ -8,6 +8,7 @@ import { useState, useEffect } from 'react';
 import EpiteleteHtml from "epitelete-html";
 import { useProskomma, useImport } from "proskomma-react-hooks";
 import { useDeepCompareCallback, useDeepCompareEffect, useDeepCompareMemo } from "use-deep-compare";
+import '../../node_modules/@xelah/type-perf-html/build/components/HtmlPerfEditor.css'
 import '../../node_modules/@xelah/type-perf-html/build/components/HtmlSequenceEditor.css'
 
 const urlDocument = ({ selectors, bookCode, bookName, filename, ...props}) => ({
