@@ -6,13 +6,27 @@ import {
   Edit,
   Preview,
   Undo,
-  Redo, Save
+  Redo, 
+  Save,
+  AssignmentTurnedIn,
+  AssignmentLate,
 } from '@mui/icons-material'
 import PropTypes from 'prop-types';
 
 
 export default function Buttons(props) {
-  const { canUndo, canRedo, setToggles, undo, redo, onSave, canSave, showToggles } = props;
+  const { 
+    canUndo, 
+    canRedo, 
+    setToggles, 
+    undo, 
+    redo, 
+    onShowUnaligned, 
+    allAligned, 
+    onSave, 
+    canSave,
+    showToggles
+  } = props;
   const togglesAll = useMemo(
     () => ["sectionable", "blockable", "editable", "preview"],
     []
@@ -40,6 +54,12 @@ export default function Buttons(props) {
 
   const handleRedo = (event) => {
     redo();
+    event.preventDefault();
+    return false;
+  };
+
+  const handleAssignmentDataClick = (event) => {
+    onShowUnaligned(event);
     event.preventDefault();
     return false;
   };
@@ -90,6 +110,16 @@ export default function Buttons(props) {
         <Edit />
       </ToggleButton>
       <ToggleButton
+        data-test-id="ButtonAssignmentData"
+        value="alignment"
+        aria-label="alignment"
+        onClick={handleAssignmentDataClick}
+        disabled={allAligned}
+        title="Alignment"
+      >
+        {allAligned ? <AssignmentTurnedIn /> : <AssignmentLate />}
+      </ToggleButton>
+      <ToggleButton
         data-test-id="Undo"
         value="undo"
         aria-label="undo"
@@ -131,6 +161,8 @@ Buttons.propTypes = {
   canRedo: PropTypes.bool,
   editable: PropTypes.bool,
   preview: PropTypes.bool,
+  onShowUnaligned: PropTypes.func,
+  allAligned: PropTypes.bool,
   canSave: PropTypes.bool,
   showToggles: PropTypes.bool,
 };
