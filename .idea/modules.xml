@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/uw-editor.iml" filepath="$PROJECT_DIR$/.idea/uw-editor.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../xelah/.idea/xelah.iml" filepath="$PROJECT_DIR$/../xelah/.idea/xelah.iml" />
     </modules>
   </component>
 </project>

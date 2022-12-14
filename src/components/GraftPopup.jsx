@@ -1,19 +1,21 @@
 import React from 'react'
 // import PropTypes from 'prop-types'
 import { Button } from '@mui/material'
-import {DraggableModal} from 'translation-helps-rcl'
-import {Card} from 'translation-helps-rcl'
+import DraggableModal from 'translation-helps-rcl/dist/components/DraggableModal'
+import Card from 'translation-helps-rcl/dist/components/Card'
 import { HtmlPerfEditor } from "@xelah/type-perf-html";
 
 export default function GraftPopup(graftProps) {
-  console.log(graftProps)
+
   const {
     graftSequenceId,
     setGraftSequenceId,
   } = graftProps
 
   const handleClickClose = () => {
-    setGraftSequenceId(null)
+    setTimeout(() => {
+      setGraftSequenceId(null)
+    }, 50)
   }
 
   return (
@@ -30,7 +32,7 @@ export default function GraftPopup(graftProps) {
           root: 'w-96'
         }}
       >
-        { graftSequenceId ? <HtmlPerfEditor key="2" {...graftProps} verbose={true} /> : ''}
+        { graftSequenceId ? <HtmlPerfEditor key="2" {...graftProps} /> : ''}
         <Button
           size='large'
           color='primary'
