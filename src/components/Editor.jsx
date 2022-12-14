@@ -44,7 +44,8 @@ export default function Editor( props) {
       Object.entries(obj).forEach(([chNum, chObj]) => {
         Object.entries(chObj).forEach(([vNum, verseArr]) => {
           verseArr.forEach(wObj => {
-            resArray.push({ id: `${chNum}:${vNum}-${wObj?.word}-${wObj?.occurrence}/${wObj?.totalOccurrences}`, wObj })
+            const occurrenceStr = (wObj?.totalOccurrences > 1) ? `-${wObj?.occurrence}/${wObj?.totalOccurrences}` : ""
+            resArray.push({ id: `${chNum}:${vNum}-${wObj?.word}${occurrenceStr}`, wObj })
           })
         })
       })
@@ -68,8 +69,8 @@ export default function Editor( props) {
     setAnchorEl(anchorEl ? null : event.currentTarget);
   };
 
-  const open = Boolean(anchorEl);
-  const id = open ? 'simple-popper' : undefined;
+  const popperOpen = Boolean(anchorEl);
+  const id = popperOpen ? 'simple-popper' : undefined;
 
   const onHtmlPerf = useDeepCompareCallback(( _htmlPerf, { sequenceId }) => {
     const perfChanged = !isEqual(htmlPerf, _htmlPerf);
@@ -217,7 +218,7 @@ export default function Editor( props) {
   return (
     <div key="1" className="Editor" style={style}>
       <Buttons {...buttonsProps} />
-      <Popper id={id} open={open} anchorEl={anchorEl}>
+      <Popper id={id} open={popperOpen} anchorEl={anchorEl}>
         <Box sx={{ border: 1, p: 1, bgcolor: 'background.paper' }}>
           List of words with broken alignment:
           <Box>

@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@xelah/type-perf-html": "^1.0.0",
-    "epitelete-html": "^0.2.15",
+    "epitelete-html": "^0.2.10",
     "proskomma-react-hooks": "^2.4.0"
   },
   "devDependencies": {
