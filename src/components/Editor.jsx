@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import PropTypes from 'prop-types';
 import { useDeepCompareCallback, useDeepCompareEffect } from "use-deep-compare";
 import isEqual from 'lodash.isequal';
@@ -15,7 +15,7 @@ import Buttons from "./Buttons"
 // import GraftPopup from "./GraftPopup"
 
 export default function Editor( props) {
-  const { onSave, epiteleteHtml, bookId, verbose } = props;
+  const { onSave, epiteleteHtml, bookId, verbose, scrollToVerse } = props;
   // const [graftSequenceId, setGraftSequenceId] = useState(null);
 
   // const [isSaving, startSaving] = useTransition();
@@ -106,6 +106,17 @@ export default function Editor( props) {
   }, [htmlPerf, sequenceIds, setSequenceId, setSequenceIds]
   )
 
+  const editorRef = useRef(null);
+
+  useEffect( () => {
+    if ( htmlPerf && sequenceId && editorRef.current && scrollToVerse ) {
+      const verseElem = editorRef.current.querySelector(`span.mark.verses[data-atts-number='${scrollToVerse}']`)
+      if (verseElem) {
+        verseElem.scrollIntoView({behavior: "smooth", block: "center"})
+      }
+    }
+  }, [scrollToVerse, htmlPerf, sequenceId, editorRef])
+
   const skeleton = (
     <Stack spacing={1}>
       <Skeleton key='1' variant="text" height="8em" sx={{ bgcolor: 'white' }} />
@@ -168,7 +179,7 @@ export default function Editor( props) {
   // );
 
   return (
-    <div key="1" className="Editor" style={style}>
+    <div key="1" className="Editor" style={style} ref={editorRef}>
       <Buttons {...buttonsProps} />
       {sequenceId && htmlPerf ? <HtmlPerfEditor {...htmlEditorProps} /> : skeleton}
       {/* <GraftPopup {...graftProps} /> */}
@@ -185,6 +196,7 @@ Editor.propTypes = {
   bookId: PropTypes.string,
   /** Whether to show extra info in the js console */
   verbose: PropTypes.bool,
+  scrollToVerse: PropTypes.number
 };
 
 Editor.defaultProps = {
