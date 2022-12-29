@@ -6,17 +6,33 @@ import {
   Edit,
   Preview,
   Undo,
-  Redo, Save
+  Redo, 
+  Save,
+  AssignmentTurnedIn,
+  AssignmentLate,
 } from '@mui/icons-material'
 import PropTypes from 'prop-types';
 
+import { useTheme } from '@mui/material/styles';
 
 export default function Buttons(props) {
-  const { canUndo, canRedo, setToggles, undo, redo, onSave, canSave } = props;
+  const { 
+    canUndo, 
+    canRedo, 
+    setToggles, 
+    undo, 
+    redo, 
+    onShowUnaligned, 
+    allAligned, 
+    onSave, 
+    canSave,
+    showToggles
+  } = props;
   const togglesAll = useMemo(
     () => ["sectionable", "blockable", "editable", "preview"],
     []
   );
+  const theme = useTheme()
   const toggles = togglesAll.filter((toggle) => props[toggle]);
 
   const handleToggles = useCallback(
@@ -44,6 +60,12 @@ export default function Buttons(props) {
     return false;
   };
 
+  const handleAssignmentDataClick = (event) => {
+    onShowUnaligned(event);
+    event.preventDefault();
+    return false;
+  };
+
   return (
     <ToggleButtonGroup
       data-test-id="ToggleButtonGroup"
@@ -51,24 +73,42 @@ export default function Buttons(props) {
       onChange={handleToggles}
       aria-label="text formatting"
       className="buttons"
-      sx={{mb:2}}
+      sx={{
+        mb:2,
+        position: 'sticky',
+        top: 0,
+        zIndex: 'appBar',
+        background: theme.palette.background.default
+      }}
     >
-      <ToggleButton
-        data-test-id="ToggleButtonSectionable"
-        value="sectionable"
-        aria-label="sectionable"
-        title="Sectionable"
-      >
-        <ViewStream />
-      </ToggleButton>
-      <ToggleButton
-        data-test-id="ToggleButtonBlockable"
-        value="blockable"
-        aria-label="blockable"
-        title="Blockable"
-      >
-        <Subject />
-      </ToggleButton>
+      { showToggles ?
+        <>
+          <ToggleButton
+            data-test-id="ToggleButtonSectionable"
+            value="sectionable"
+            aria-label="sectionable"
+            title="Sectionable"
+          >
+            <ViewStream />
+          </ToggleButton>
+          <ToggleButton
+            data-test-id="ToggleButtonBlockable"
+            value="blockable"
+            aria-label="blockable"
+            title="Blockable"
+          >
+            <Subject />
+          </ToggleButton>
+          <ToggleButton
+            data-test-id="ToggleButtonPreview"
+            value="preview"
+            aria-label="preview"
+            title="Preview"
+          >
+            <Preview />
+          </ToggleButton>
+        </>
+        : <></> }
       <ToggleButton
         data-test-id="ToggleButtonEditable"
         value="editable"
@@ -78,12 +118,14 @@ export default function Buttons(props) {
         <Edit />
       </ToggleButton>
       <ToggleButton
-        data-test-id="ToggleButtonPreview"
-        value="preview"
-        aria-label="preview"
-        title="Preview"
+        data-test-id="ButtonAssignmentData"
+        value="alignment"
+        aria-label="alignment"
+        onClick={handleAssignmentDataClick}
+        disabled={allAligned}
+        title="Alignment"
       >
-        <Preview />
+        {allAligned ? <AssignmentTurnedIn /> : <AssignmentLate />}
       </ToggleButton>
       <ToggleButton
         data-test-id="Undo"
@@ -127,5 +169,8 @@ Buttons.propTypes = {
   canRedo: PropTypes.bool,
   editable: PropTypes.bool,
   preview: PropTypes.bool,
+  onShowUnaligned: PropTypes.func,
+  allAligned: PropTypes.bool,
   canSave: PropTypes.bool,
+  showToggles: PropTypes.bool,
 };

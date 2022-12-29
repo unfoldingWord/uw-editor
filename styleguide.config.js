@@ -6,6 +6,7 @@ const {
 } = require('./package.json');
 
 module.exports = {
+  assetsDir: 'src/data',
   usageMode: 'expand',
   exampleMode: 'expand',
   moduleAliases: {},

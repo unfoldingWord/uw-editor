@@ -11,8 +11,10 @@ import Section from "./Section";
 import SectionHeading from "./SectionHeading";
 import SectionBody from "./SectionBody";
 import Buttons from "./Buttons"
+import Box from '@mui/material/Box';
+import Popper from '@mui/material/Popper';
 
-// import GraftPopup from "./GraftPopup"
+import GraftPopup from "./GraftPopup"
 
 export default function Editor( props) {
   const { onSave, epiteleteHtml, bookId, bcvQuery, verbose } = props;
@@ -27,33 +29,83 @@ export default function Editor( props) {
     const books = Object.keys(bcvQuery?.book)
     _bookId = books[0] || bookId || ""
   }
-  
+    const [orgUnaligned, setOrgUnaligned] = useState();
+  const [brokenAlignedWords, setBrokenAlignedWords] = useState();
+  const [anchorEl, setAnchorEl] = React.useState(null);
+
   const bookCode = _bookId.toUpperCase()
   const [lastSaveHistoryLength, setLastSaveHistoryLength] = useState(epiteleteHtml?.history[bookCode] ? epiteleteHtml.history[bookCode].stack.length : 1)
   const readOptions = { readPipeline: "stripAlignment" }
+  
+  const arrayToObject = (array, keyField) =>
+    array.reduce((obj, item) => {
+      let iCopy = Object.assign({}, item);
+      delete iCopy[keyField]
+      obj[item[keyField]] = iCopy;
+      return obj
+    }, {})
+
+  const getFlatWordObj = (obj) => {
+    const resArray = [];
+    if (obj) {
+      Object.entries(obj).forEach(([chNum, chObj]) => {
+        Object.entries(chObj).forEach(([vNum, verseArr]) => {
+          verseArr.forEach(wObj => {
+            const occurrenceStr = (wObj?.totalOccurrences > 1) ? `-${wObj?.occurrence}/${wObj?.totalOccurrences}` : ""
+            resArray.push({ id: `${chNum}:${vNum}-${wObj?.word}${occurrenceStr}`, wObj })
+          })
+        })
+      })
+    }
+    return arrayToObject(resArray,"id")
+  }
 
   useDeepCompareEffect(() => {
     if (epiteleteHtml) {
       epiteleteHtml.readHtml( bookCode, readOptions, bcvQuery ).then((_htmlPerf) => {
+        const _alignmentData = epiteleteHtml.getPipelineData(bookCode)
+        setOrgUnaligned(getFlatWordObj(_alignmentData?.unalignedWords))
         setHtmlPerf(_htmlPerf);
       });
     }
-  }, [epiteleteHtml, bookCode]);
+  }, [epiteleteHtml, bookCode, setOrgUnaligned, setHtmlPerf]);
+
+  
+  const handleUnalignedClick = (event) => {
+    setAnchorEl(anchorEl ? null : event.currentTarget);
+  };
+
+  const setHtmlAndUpdateUnaligned = (newHtmlPerf) => {
+    const _alignmentData = epiteleteHtml.getPipelineData(bookCode)
+    const nextUnalignedData = getFlatWordObj(_alignmentData?.unalignedWords)
+    const diffUnaligned = Object.keys(orgUnaligned)
+      .filter(x => !nextUnalignedData[x])
+      .concat(Object.keys(nextUnalignedData).filter(x => !orgUnaligned[x]))
+    setBrokenAlignedWords(diffUnaligned)
+    setHtmlPerf(newHtmlPerf)
+  }
+
+  const popperOpen = Boolean(anchorEl);
+  const id = popperOpen ? 'simple-popper' : undefined;
 
   const onHtmlPerf = useDeepCompareCallback(( _htmlPerf, { sequenceId }) => {
+
     const perfChanged = !isEqual(htmlPerf, _htmlPerf);
     if (perfChanged) setHtmlPerf(_htmlPerf);
 
+    console.log('onhtmlperf', perfChanged)
     const saveNow = async () => {
       const writeOptions = { writePipeline: "mergeAlignment", readPipeline: "stripAlignment" }
       const newHtmlPerf = await epiteleteHtml.writeHtml( bookCode, sequenceId, _htmlPerf, writeOptions, bcvQuery);
       if (verbose) console.log({ info: "Saved sequenceId", bookCode, sequenceId });
 
       const perfChanged = !isEqual(htmlPerf, newHtmlPerf);
-      if (perfChanged) setHtmlPerf(newHtmlPerf);
+      if (perfChanged) {
+        setHtmlAndUpdateUnaligned(newHtmlPerf)
+      }
     };
     saveNow()
-  }, [htmlPerf, bookCode]);
+  }, [htmlPerf, bookCode, orgUnaligned, setBrokenAlignedWords, setHtmlPerf]);
 
   const handleSave = async () => {
     setLastSaveHistoryLength( epiteleteHtml?.history[bookCode].stack.length )
@@ -63,25 +115,25 @@ export default function Editor( props) {
 
   const undo = async () => {
     const newPerfHtml = await epiteleteHtml.undoHtml(bookCode, readOptions);
-    setHtmlPerf(newPerfHtml);
+    setHtmlAndUpdateUnaligned(newPerfHtml);
   };
 
   const redo = async () => {
     const newPerfHtml = await epiteleteHtml.redoHtml(bookCode, readOptions);
-    setHtmlPerf(newPerfHtml);
+    setHtmlAndUpdateUnaligned(newPerfHtml);
   };
 
   const canUndo = epiteleteHtml?.canUndo(bookCode);
   const canRedo = epiteleteHtml?.canRedo(bookCode);
   const canSave = epiteleteHtml?.history[bookCode] && epiteleteHtml.history[bookCode].stack.length > lastSaveHistoryLength;
 
-  // const handlers = {
-  //   onBlockClick: ({ element }) => {
-  //     const _sequenceId = element.dataset.target;
-  //     // if (_sequenceId && !isInline) addSequenceId(_sequenceId);
-  //     if (_sequenceId) setGraftSequenceId(_sequenceId);
-  //   },
-  // };
+  const handlers = {
+    onBlockClick: ({ element }) => {
+      const _sequenceId = element.dataset.target;
+      // if (_sequenceId && !isInline) addSequenceId(_sequenceId);
+      if (_sequenceId) setGraftSequenceId(_sequenceId);
+    },
+  };
 
   const {
     state: {
@@ -138,46 +190,50 @@ export default function Editor( props) {
       sectionBody: SectionBody,
     },
     options,
-    // handlers,
+    handlers,
     decorators: {},
     verbose,
   };
 
 
-  // const graftProps = {
-  //   ...htmlEditorProps,
-  //   options: { ...options, sectionable: false },
-  //   sequenceIds: [graftSequenceId],
-  //   graftSequenceId,
-  //   setGraftSequenceId,
-  // };
+  const graftProps = {
+    ...htmlEditorProps,
+    options: { ...options, sectionable: false },
+    sequenceIds: [graftSequenceId],
+    graftSequenceId,
+    setGraftSequenceId,
+  };
 
   const buttonsProps = {
     sectionable,
     blockable,
     editable,
     preview,
+    allAligned: (!brokenAlignedWords || brokenAlignedWords.length===0),
+    onShowUnaligned: handleUnalignedClick,
     undo,
     redo,
     canUndo,
     canRedo,
     setToggles,
     canSave,
-    onSave:handleSave,
+    onSave: handleSave,
+    showToggles:false
   }
-
-  // const graftSequenceEditor = (
-  //   <>
-  //     <h2>Graft Sequence Editor</h2>
-  //     <HtmlPerfEditor key="2" {...graftProps} />
-  //   </>
-  // );
 
   return (
     <div key="1" className="Editor" style={style}>
       <Buttons {...buttonsProps} />
+      <Popper id={id} open={popperOpen} anchorEl={anchorEl}>
+        <Box sx={{ border: 1, p: 1, bgcolor: 'background.paper' }}>
+          List of words with broken alignment:
+          <Box>
+            {brokenAlignedWords && brokenAlignedWords.map((str,i) => <li key={i}>{str}</li>)}
+          </Box>
+        </Box>
+      </Popper>
       {sequenceId && htmlPerf ? <HtmlPerfEditor {...htmlEditorProps} /> : skeleton}
-      {/* <GraftPopup {...graftProps} /> */}
+      <GraftPopup {...graftProps} />
     </div>
   );
 };
