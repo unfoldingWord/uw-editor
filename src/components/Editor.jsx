@@ -18,7 +18,7 @@ import GraftPopup from "./GraftPopup"
 
 export default function Editor( props) {
   const { onSave, epiteleteHtml, bookId, bcvQuery, verbose } = props;
-  // const [graftSequenceId, setGraftSequenceId] = useState(null);
+  const [graftSequenceId, setGraftSequenceId] = useState(null);
 
   // const [isSaving, startSaving] = useTransition();
   const [htmlPerf, setHtmlPerf] = useState();
@@ -29,13 +29,13 @@ export default function Editor( props) {
     const books = Object.keys(bcvQuery?.book)
     _bookId = books[0] || bookId || ""
   }
-    const [orgUnaligned, setOrgUnaligned] = useState();
+  const [orgUnaligned, setOrgUnaligned] = useState();
   const [brokenAlignedWords, setBrokenAlignedWords] = useState();
   const [anchorEl, setAnchorEl] = React.useState(null);
 
   const bookCode = _bookId.toUpperCase()
   const [lastSaveHistoryLength, setLastSaveHistoryLength] = useState(epiteleteHtml?.history[bookCode] ? epiteleteHtml.history[bookCode].stack.length : 1)
-  const readOptions = { readPipeline: "stripAlignment" }
+  const readOptions = { readPipeline: "stripAlignmentPipeline" }
   
   const arrayToObject = (array, keyField) =>
     array.reduce((obj, item) => {
@@ -68,7 +68,7 @@ export default function Editor( props) {
         setHtmlPerf(_htmlPerf);
       });
     }
-  }, [epiteleteHtml, bookCode, setOrgUnaligned, setHtmlPerf]);
+  }, [epiteleteHtml, bookCode, bcvQuery, setOrgUnaligned, setHtmlPerf]);
 
   
   const handleUnalignedClick = (event) => {
@@ -88,6 +88,8 @@ export default function Editor( props) {
   const popperOpen = Boolean(anchorEl);
   const id = popperOpen ? 'simple-popper' : undefined;
 
+  const onInput = (props) => console.log(props)
+
   const onHtmlPerf = useDeepCompareCallback(( _htmlPerf, { sequenceId }) => {
 
     const perfChanged = !isEqual(htmlPerf, _htmlPerf);
@@ -95,9 +97,10 @@ export default function Editor( props) {
 
     console.log('onhtmlperf', perfChanged)
     const saveNow = async () => {
-      const writeOptions = { writePipeline: "mergeAlignment", readPipeline: "stripAlignment" }
+      const writeOptions = { writePipeline: "mergeAlignmentPipeline", readPipeline: "stripAlignmentPipeline" }
       const newHtmlPerf = await epiteleteHtml.writeHtml( bookCode, sequenceId, _htmlPerf, writeOptions, bcvQuery);
-      if (verbose) console.log({ info: "Saved sequenceId", bookCode, sequenceId });
+      // if (verbose) console.log({ info: "Saved sequenceId", bookCode, sequenceId });
+      if (verbose) console.log({ _htmlPerf, info: "Saved sequenceId", bookCode, sequenceId });
 
       const perfChanged = !isEqual(htmlPerf, newHtmlPerf);
       if (perfChanged) {
@@ -105,7 +108,7 @@ export default function Editor( props) {
       }
     };
     saveNow()
-  }, [htmlPerf, bookCode, orgUnaligned, setBrokenAlignedWords, setHtmlPerf]);
+  }, [htmlPerf, bookCode, bcvQuery, orgUnaligned, setBrokenAlignedWords, setHtmlPerf]);
 
   const handleSave = async () => {
     setLastSaveHistoryLength( epiteleteHtml?.history[bookCode].stack.length )
@@ -182,6 +185,7 @@ export default function Editor( props) {
   const htmlEditorProps = {
     htmlPerf,
     onHtmlPerf,
+    onInput,
     sequenceIds,
     addSequenceId,
     components: {

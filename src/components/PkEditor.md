@@ -23,7 +23,18 @@ function Component () {
     console.log(usfmText)
   }
 
+  const bcvBookId = 'tit'
+  const chapter = 1
+  const bcvQuery = { 
+    book: { 
+      [bcvBookId]: {
+        ch: { [chapter] : {} } 
+      } 
+    } 
+  }
+
   const editorProps = {
+    bcvQuery,
     onSave,
     docSetId,
     bookId,
