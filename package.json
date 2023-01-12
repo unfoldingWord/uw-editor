@@ -18,7 +18,7 @@
     "translation-helps-rcl": "3.3.4-rc.2"
   },
   "dependencies": {
-    "@xelah/type-perf-html": "^1.0.0",
+    "@xelah/type-perf-html": "^1.0.2",
     "epitelete-html": "^0.2.10",
     "proskomma-react-hooks": "^2.4.0"
   },
