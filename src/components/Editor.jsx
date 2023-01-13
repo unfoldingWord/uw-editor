@@ -28,7 +28,7 @@ export default function Editor( props) {
 
   const bookCode = bookId.toUpperCase()
   const [lastSaveHistoryLength, setLastSaveHistoryLength] = useState(epiteleteHtml?.history[bookCode] ? epiteleteHtml.history[bookCode].stack.length : 1)
-  const readOptions = { readPipeline: "stripAlignmentPipeline" }
+  const readOptions = { readPipeline: "stripAlignment" }
   
   const arrayToObject = (array, keyField) =>
     array.reduce((obj, item) => {
@@ -90,7 +90,7 @@ export default function Editor( props) {
 
     console.log('onhtmlperf', perfChanged)
     const saveNow = async () => {
-      const writeOptions = { writePipeline: "mergeAlignmentPipeline", readPipeline: "stripAlignmentPipeline" }
+      const writeOptions = { writePipeline: "mergeAlignment", readPipeline: "stripAlignment" }
       const newHtmlPerf = await epiteleteHtml.writeHtml( bookCode, sequenceId, _htmlPerf, writeOptions);
       if (verbose) console.log({ info: "Saved sequenceId", bookCode, sequenceId });
 
