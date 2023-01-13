@@ -81,34 +81,30 @@ export default function Buttons(props) {
         background: theme.palette.background.default
       }}
     >
-      { showToggles ?
-        <>
-          <ToggleButton
-            data-test-id="ToggleButtonSectionable"
-            value="sectionable"
-            aria-label="sectionable"
-            title="Sectionable"
-          >
-            <ViewStream />
-          </ToggleButton>
-          <ToggleButton
-            data-test-id="ToggleButtonBlockable"
-            value="blockable"
-            aria-label="blockable"
-            title="Blockable"
-          >
-            <Subject />
-          </ToggleButton>
-          <ToggleButton
-            data-test-id="ToggleButtonPreview"
-            value="preview"
-            aria-label="preview"
-            title="Preview"
-          >
-            <Preview />
-          </ToggleButton>
-        </>
-        : <></> }
+      { showToggles && (<ToggleButton
+        data-test-id="ToggleButtonSectionable"
+        value="sectionable"
+        aria-label="sectionable"
+        title="Sectionable"
+      >
+        <ViewStream />
+      </ToggleButton>)}
+      { showToggles && (<ToggleButton
+        data-test-id="ToggleButtonBlockable"
+        value="blockable"
+        aria-label="blockable"
+        title="Blockable"
+      >
+        <Subject />
+      </ToggleButton>)}
+      { showToggles && (<ToggleButton
+        data-test-id="ToggleButtonPreview"
+        value="preview"
+        aria-label="preview"
+        title="Preview"
+      >
+        <Preview />
+      </ToggleButton>)}
       <ToggleButton
         data-test-id="ToggleButtonEditable"
         value="editable"
