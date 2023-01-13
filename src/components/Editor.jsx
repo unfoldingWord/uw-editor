@@ -71,7 +71,6 @@ export default function Editor( props) {
 
   const setHtmlAndUpdateUnaligned = (newHtmlPerf) => {
     const _alignmentData = epiteleteHtml.getPipelineData(bookCode)
-    console.log(_alignmentData)
     const nextUnalignedData = getFlatWordObj(_alignmentData?.unalignedWords)
     const diffUnaligned = Object.keys(orgUnaligned)
       .filter(x => !nextUnalignedData[x])
