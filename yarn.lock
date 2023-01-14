@@ -6877,7 +6877,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"epitelete-html@npm:^0.2.10":
+"epitelete-html@npm:^0.2.15":
   version: 0.2.15
   resolution: "epitelete-html@npm:0.2.15"
   dependencies:
@@ -16186,7 +16186,7 @@ __metadata:
     babel-loader: ^8.2.2
     crypto-browserify: ^3.12.0
     css-loader: ^6.7.1
-    epitelete-html: ^0.2.10
+    epitelete-html: ^0.2.15
     eslint: ^7.32.0
     eslint-config-prettier: ^8.4.0
     eslint-plugin-import: ^2.26.0
