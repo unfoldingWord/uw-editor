@@ -27,8 +27,10 @@ export default function Editor( props) {
   const [anchorEl, setAnchorEl] = useState(null);
   const [blockIsEdited, setBlockIsEdited] = useState(false);
   const [hasUnsavedBlock, setHasUnsavedBlock] = useState(false);
+  const [undoInx, setUndoInx] = useState(0)
 
   const bookCode = bookId.toUpperCase()
+  const [lastSaveUndoInx, setLastSaveUndoInx] = useState(0)
   const readOptions = { readPipeline: "stripAlignment" }
   
   const arrayToObject = (array, keyField) =>
@@ -77,13 +79,19 @@ export default function Editor( props) {
       .filter(x => !nextUnalignedData[x])
       .concat(Object.keys(nextUnalignedData).filter(x => !orgUnaligned[x]))
     setBrokenAlignedWords(diffUnaligned)
+    setHasUnsavedBlock(true)
     setHtmlPerf(newHtmlPerf)
   }
 
   const popperOpen = Boolean(anchorEl);
   const id = popperOpen ? 'simple-popper' : undefined;
   
-  const onInput = () => setBlockIsEdited(true)
+  const onInput = () => {
+    if (!blockIsEdited) {
+      setUndoInx(undoInx+1)
+      setBlockIsEdited(true)
+    }
+  }
 
   const onHtmlPerf = useDeepCompareCallback(( _htmlPerf, { sequenceId }) => {
 
@@ -91,7 +99,7 @@ export default function Editor( props) {
     const perfChanged = !isEqual(htmlPerf, _htmlPerf);
     if (perfChanged) setHtmlPerf(_htmlPerf);
 
-    console.log('onhtmlperf', perfChanged)
+    if (verbose) console.log('onhtmlperf', perfChanged)
     const saveNow = async () => {
       const writeOptions = { writePipeline: "mergeAlignment", readPipeline: "stripAlignment" }
       const newHtmlPerf = await epiteleteHtml.writeHtml( bookCode, sequenceId, _htmlPerf, writeOptions);
@@ -100,13 +108,13 @@ export default function Editor( props) {
       const perfChanged = !isEqual(htmlPerf, newHtmlPerf);
       if (perfChanged) {
         setHtmlAndUpdateUnaligned(newHtmlPerf)
-        setHasUnsavedBlock()
       }
     };
     saveNow()
   }, [htmlPerf, bookCode, orgUnaligned, setBrokenAlignedWords, setHtmlPerf]);
 
   const handleSave = async () => {
+    setLastSaveUndoInx(undoInx)
     setBlockIsEdited(false)
     setHasUnsavedBlock(false)
     const usfmText = await epiteleteHtml.readUsfm( bookCode )
@@ -114,22 +122,22 @@ export default function Editor( props) {
   }
 
   const undo = async () => {
+    setUndoInx((undoInx>0)? undoInx-1 : 0)
     setBlockIsEdited(false)
-    setHasUnsavedBlock(true)
     const newPerfHtml = await epiteleteHtml.undoHtml(bookCode, readOptions);
     setHtmlAndUpdateUnaligned(newPerfHtml);
   };
 
   const redo = async () => {
+    setUndoInx(undoInx+1)
     setBlockIsEdited(false)
-    setHasUnsavedBlock(true)
     const newPerfHtml = await epiteleteHtml.redoHtml(bookCode, readOptions);
     setHtmlAndUpdateUnaligned(newPerfHtml);
   };
 
   const canUndo = blockIsEdited || epiteleteHtml?.canUndo(bookCode);
   const canRedo = epiteleteHtml?.canRedo(bookCode);
-  const canSave = blockIsEdited || hasUnsavedBlock
+  const canSave = (blockIsEdited || hasUnsavedBlock) && (lastSaveUndoInx !== undoInx)
 
   const handlers = {
     onBlockClick: ({ element }) => {
