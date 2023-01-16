@@ -6877,26 +6877,26 @@ __metadata:
   languageName: node
   linkType: hard
 
-"epitelete-html@npm:^0.2.10":
-  version: 0.2.15
-  resolution: "epitelete-html@npm:0.2.15"
+"epitelete-html@npm:0.2.16":
+  version: 0.2.16
+  resolution: "epitelete-html@npm:0.2.16"
   dependencies:
     "@babel/core": ^7.17.10
-    epitelete: dev
+    epitelete: ^0.2.15
     node-html-parser: ^5.3.3
-  checksum: da4549e7f6563f9b450681b7d4b2367e66784201b29d56661cf64c34bfa7fd3770000f355b7bb7c19a50b6988c924e2c94c1fab6ffcb183987806c2e8a5f5b3e
+  checksum: 342fdd7d0dae02514c5bcc102192efaed9e7cab6c4274ee6cbb6bb43042462bc83cdccc338967dd90bd69f81ea47ad7b11fdd5158ccf20bcd6d08bdee9f97541
   languageName: node
   linkType: hard
 
-"epitelete@npm:dev":
-  version: 0.2.15-dev.1
-  resolution: "epitelete@npm:0.2.15-dev.1"
+"epitelete@npm:^0.2.15":
+  version: 0.2.15
+  resolution: "epitelete@npm:0.2.15"
   dependencies:
     "@babel/core": ^7.19.0
-    lodash: 4.17.21
-    pipeline-handler: ^1.1.0
-    proskomma-json-tools: ^0.5.7
-  checksum: 6b40f9ec4d1826abfb1d80756f9305c0263cf642c808013777381bdfedd52c371ef9b128d4d33d6134f42f788ef88ad6f54f069e28627fee9a4c4c22d92a0837
+    pipeline-handler: ^2.2.2
+    proskomma-json-tools: ^0.5.12
+    rfdc: ^1.3.0
+  checksum: dddbdd87d50da671de1522d66ded10e6bab7b36f70f2231c6ab89993dda5de289f7e12ee8c1c6b09e5239de80dec489afc375a592e1ac879f6b5a017d8910e50
   languageName: node
   linkType: hard
 
@@ -10849,7 +10849,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash@npm:4.17.21, lodash@npm:^4.17.11, lodash@npm:^4.17.15, lodash@npm:^4.17.20, lodash@npm:^4.17.21, lodash@npm:^4.7.0":
+"lodash@npm:^4.17.11, lodash@npm:^4.17.15, lodash@npm:^4.17.20, lodash@npm:^4.17.21, lodash@npm:^4.7.0":
   version: 4.17.21
   resolution: "lodash@npm:4.17.21"
   checksum: eb835a2e51d381e561e508ce932ea50a8e5a68f4ebdd771ea240d3048244a8d13658acbd502cd4829768c56f2e16bdd4340b9ea141297d472517b83868e677f7
@@ -12142,10 +12142,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pipeline-handler@npm:^1.1.0":
-  version: 1.1.1
-  resolution: "pipeline-handler@npm:1.1.1"
-  checksum: b0a0f6dff53fc9bad9f5d7f58fadea46e431c97805c2a5b740fc5392e01183151352de5c443c29e660b8e6a107fe568c19d9a48084e56de59bc82d4ea24a788a
+"pipeline-handler@npm:^2.2.2":
+  version: 2.2.2
+  resolution: "pipeline-handler@npm:2.2.2"
+  dependencies:
+    deep-copy-all: ^1.3.4
+    proskomma-json-tools: ^0.5.12
+    xregexp: ^5.1.1
+  checksum: 534632984ec6fa9e26a29699956f4a1f5600c9bdb3072de94e4afcb70d7daa6e138894610ca700cc6dad7f4537e11db56c99602085b90f0317e2c1b05b9c4739
   languageName: node
   linkType: hard
 
@@ -13192,7 +13196,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"proskomma-json-tools@npm:^0.5.7":
+"proskomma-json-tools@npm:^0.5.12, proskomma-json-tools@npm:^0.5.7":
   version: 0.5.12
   resolution: "proskomma-json-tools@npm:0.5.12"
   dependencies:
@@ -14297,6 +14301,13 @@ __metadata:
   version: 1.0.4
   resolution: "reusify@npm:1.0.4"
   checksum: c3076ebcc22a6bc252cb0b9c77561795256c22b757f40c0d8110b1300723f15ec0fc8685e8d4ea6d7666f36c79ccc793b1939c748bf36f18f542744a4e379fcc
+  languageName: node
+  linkType: hard
+
+"rfdc@npm:^1.3.0":
+  version: 1.3.0
+  resolution: "rfdc@npm:1.3.0"
+  checksum: fb2ba8512e43519983b4c61bd3fa77c0f410eff6bae68b08614437bc3f35f91362215f7b4a73cbda6f67330b5746ce07db5dd9850ad3edc91271ad6deea0df32
   languageName: node
   linkType: hard
 
@@ -16186,7 +16197,7 @@ __metadata:
     babel-loader: ^8.2.2
     crypto-browserify: ^3.12.0
     css-loader: ^6.7.1
-    epitelete-html: ^0.2.10
+    epitelete-html: 0.2.16
     eslint: ^7.32.0
     eslint-config-prettier: ^8.4.0
     eslint-plugin-import: ^2.26.0
