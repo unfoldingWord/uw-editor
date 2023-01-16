@@ -100,6 +100,10 @@ function Component () {
   const [ep, setEp] = useState(new EpiteleteHtml({ proskomma, docSetId, options: { historySize: 100 } }))
   const verbose = true
 
+  const onUnsavedData = (value) => {
+    console.log(`onUnsavedData callback - value: ${value}`)
+  }
+
   const onSave = async (bookCode,usfmText) => {
     console.log("save button clicked")
     console.log("USFM:",usfmText)
@@ -125,6 +129,7 @@ function Component () {
     epiteleteHtml: ep,
     bookId: 'TIT',
     onSave,
+    onUnsavedData,
     verbose
   }
   
