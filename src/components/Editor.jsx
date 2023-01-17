@@ -17,7 +17,7 @@ import Popper from '@mui/material/Popper';
 import GraftPopup from "./GraftPopup"
 
 export default function Editor( props) {
-  const { onSave, epiteleteHtml, bookId, verbose } = props;
+  const { onSave, onUnsavedData, epiteleteHtml, bookId, verbose } = props;
   const [graftSequenceId, setGraftSequenceId] = useState(null);
 
   // const [isSaving, startSaving] = useTransition();
@@ -86,9 +86,27 @@ export default function Editor( props) {
   const popperOpen = Boolean(anchorEl);
   const id = popperOpen ? 'simple-popper' : undefined;
   
+  const incUndoInx = () => {
+    if (onUnsavedData !== null) {
+      if ((undoInx + 1) === lastSaveUndoInx) onUnsavedData(false)
+      else if (undoInx === lastSaveUndoInx) onUnsavedData(true)
+    }
+    setUndoInx(undoInx+1)
+  }
+
+  const decUndoInx = () => {
+    if (undoInx>0) {
+      if (onUnsavedData !== null) {
+        if ((undoInx - 1) === lastSaveUndoInx) onUnsavedData(false)
+        else if (undoInx === lastSaveUndoInx) onUnsavedData(true)
+      }
+      setUndoInx(undoInx-1)
+    }
+  }
+
   const onInput = () => {
     if (!blockIsEdited) {
-      setUndoInx(undoInx+1)
+      incUndoInx()
       setBlockIsEdited(true)
     }
   }
@@ -118,18 +136,19 @@ export default function Editor( props) {
     setBlockIsEdited(false)
     setHasUnsavedBlock(false)
     const usfmText = await epiteleteHtml.readUsfm( bookCode )
+    onUnsavedData && onUnsavedData(false)
     onSave && onSave(bookCode,usfmText)
   }
 
   const undo = async () => {
-    setUndoInx((undoInx>0)? undoInx-1 : 0)
+    decUndoInx()
     setBlockIsEdited(false)
     const newPerfHtml = await epiteleteHtml.undoHtml(bookCode, readOptions);
     setHtmlAndUpdateUnaligned(newPerfHtml);
   };
 
   const redo = async () => {
-    setUndoInx(undoInx+1)
+    incUndoInx()
     setBlockIsEdited(false)
     const newPerfHtml = await epiteleteHtml.redoHtml(bookCode, readOptions);
     setHtmlAndUpdateUnaligned(newPerfHtml);
@@ -254,6 +273,8 @@ export default function Editor( props) {
 Editor.propTypes = {
   /** Method to call when save button is pressed */
   onSave: PropTypes.func,
+  /** Callback method to receive information about unsaved data */
+  onUnsavedData: PropTypes.func,
   /** Instance of EpiteleteHtml class */
   epiteleteHtml: PropTypes.instanceOf(EpiteleteHtml),
   /** bookId to identify the content in the editor */
