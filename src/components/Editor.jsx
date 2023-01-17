@@ -88,7 +88,6 @@ export default function Editor( props) {
   
   const incUndoInx = () => {
     if (onUnsavedData != null) {
-      console.log(onUnsavedData)
       if ((undoInx + 1) === lastSaveUndoInx) onUnsavedData(false)
       else if (undoInx === lastSaveUndoInx) onUnsavedData(true)
     }
