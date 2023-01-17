@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import PropTypes from 'prop-types';
-import { useDeepCompareCallback, useDeepCompareEffect } from "use-deep-compare";
+import { useDeepCompareCallback, useDeepCompareEffect, useDeepCompareMemo } from "use-deep-compare";
 import isEqual from 'lodash.isequal';
 import { HtmlPerfEditor } from "@xelah/type-perf-html";
 import EpiteleteHtml from "epitelete-html";
@@ -10,6 +10,7 @@ import useEditorState from "../hooks/useEditorState";
 import Section from "./Section";
 import SectionHeading from "./SectionHeading";
 import SectionBody from "./SectionBody";
+import RecursiveBlock from "./RecursiveBlock";
 import Buttons from "./Buttons"
 import Box from '@mui/material/Box';
 import Popper from '@mui/material/Popper';
@@ -17,7 +18,7 @@ import Popper from '@mui/material/Popper';
 import GraftPopup from "./GraftPopup"
 
 export default function Editor( props) {
-  const { onSave, epiteleteHtml, bookId, verbose, scrollToVerse } = props;
+  const { onSave, epiteleteHtml, bookId, verbose, activeReference } = props;
   const [graftSequenceId, setGraftSequenceId] = useState(null);
 
   // const [isSaving, startSaving] = useTransition();
@@ -29,7 +30,9 @@ export default function Editor( props) {
   const bookCode = bookId.toUpperCase()
   const [lastSaveHistoryLength, setLastSaveHistoryLength] = useState(epiteleteHtml?.history[bookCode] ? epiteleteHtml.history[bookCode].stack.length : 1)
   const readOptions = { readPipeline: "stripAlignment" }
-  
+
+  const [sectionIndices, setSectionIndices] = useState({});
+
   const arrayToObject = (array, keyField) =>
     array.reduce((obj, item) => {
       let iCopy = Object.assign({}, item);
@@ -121,14 +124,6 @@ export default function Editor( props) {
   const canRedo = epiteleteHtml?.canRedo(bookCode);
   const canSave = epiteleteHtml?.history[bookCode] && epiteleteHtml.history[bookCode].stack.length > lastSaveHistoryLength;
 
-  const handlers = {
-    onBlockClick: ({ element }) => {
-      const _sequenceId = element.dataset.target;
-      // if (_sequenceId && !isInline) addSequenceId(_sequenceId);
-      if (_sequenceId) setGraftSequenceId(_sequenceId);
-    },
-  };
-
   const {
     state: {
       sectionable,
@@ -158,16 +153,33 @@ export default function Editor( props) {
   }, [htmlPerf, sequenceIds, setSequenceId, setSequenceIds]
   )
 
+  const sectionIndex = useDeepCompareMemo(() => (
+    sectionIndices[sequenceId] || 0
+  ), [sectionIndices, sequenceId]);
+
+  // eslint-disable-next-line no-unused-vars
+  const onSectionClick = useDeepCompareCallback(({ content: _content, index }) => {
+    let _sectionIndices = { ...sectionIndices };
+    _sectionIndices[sequenceId] = index;
+    setSectionIndices(_sectionIndices);
+  }, [setSectionIndices, sectionIndices]);
+
   const editorRef = useRef(null);
 
   useEffect( () => {
-    if ( htmlPerf && sequenceId && editorRef.current && scrollToVerse ) {
-      const verseElem = editorRef.current.querySelector(`span.mark.verses[data-atts-number='${scrollToVerse}']`)
+    if ( htmlPerf && sequenceId && editorRef.current && activeReference ) {
+      const { chapter, verse } = activeReference
+
+      let _sectionIndices = { ...sectionIndices };
+      _sectionIndices[sequenceId] = chapter;
+      setSectionIndices(_sectionIndices);
+
+      const verseElem = editorRef.current.querySelector(`span.mark.verses[data-atts-number='${verse}']`)
       if (verseElem) {
         verseElem.scrollIntoView({behavior: "smooth", block: "center"})
       }
     }
-  }, [scrollToVerse, htmlPerf, sequenceId, editorRef])
+  }, [activeReference, htmlPerf, sequenceId, editorRef])
 
   const skeleton = (
     <Stack spacing={1}>
@@ -177,6 +189,15 @@ export default function Editor( props) {
       <Skeleton key='4' variant="rectangular" height="16em" sx={{ bgcolor: 'white' }} />
     </Stack>
   );
+
+  const handlers = {
+    onBlockClick: ({ element }) => {
+      const _sequenceId = element.dataset.target;
+      // if (_sequenceId && !isInline) addSequenceId(_sequenceId);
+      if (_sequenceId) setGraftSequenceId(_sequenceId);
+    },
+    onSectionClick,
+  };
 
   const options = {
     sectionable,
@@ -193,10 +214,12 @@ export default function Editor( props) {
       section: Section,
       sectionHeading: SectionHeading,
       sectionBody: SectionBody,
+      block: RecursiveBlock,
     },
     options,
     handlers,
     decorators: {},
+    sectionIndex,
     verbose,
   };
 
@@ -252,7 +275,11 @@ Editor.propTypes = {
   bookId: PropTypes.string,
   /** Whether to show extra info in the js console */
   verbose: PropTypes.bool,
-  scrollToVerse: PropTypes.number
+  activeReference: PropTypes.shape({
+    bookId: PropTypes.string,
+    chapter: PropTypes.number,
+    verse: PropTypes.number,
+  }),
 };
 
 Editor.defaultProps = {
