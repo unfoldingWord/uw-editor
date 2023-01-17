@@ -1,7 +1,7 @@
 {
   "name": "uw-editor",
   "description": "A React Component Library for editing PERF.",
-  "version": "0.1.15",
+  "version": "0.1.20",
   "homepage": "https://uw-editor.netlify.app/",
   "license": "MIT",
   "repository": {
@@ -18,8 +18,8 @@
     "translation-helps-rcl": "3.3.4-rc.2"
   },
   "dependencies": {
-    "@xelah/type-perf-html": "^1.0.0",
-    "epitelete-html": "^0.2.10",
+    "@xelah/type-perf-html": "^1.0.2",
+    "epitelete-html": "0.2.16",
     "proskomma-react-hooks": "^2.4.0"
   },
   "devDependencies": {
