@@ -87,7 +87,8 @@ export default function Editor( props) {
   const id = popperOpen ? 'simple-popper' : undefined;
   
   const incUndoInx = () => {
-    if (onUnsavedData !== null) {
+    if (onUnsavedData != null) {
+      console.log(onUnsavedData)
       if ((undoInx + 1) === lastSaveUndoInx) onUnsavedData(false)
       else if (undoInx === lastSaveUndoInx) onUnsavedData(true)
     }
@@ -96,7 +97,7 @@ export default function Editor( props) {
 
   const decUndoInx = () => {
     if (undoInx>0) {
-      if (onUnsavedData !== null) {
+      if (onUnsavedData != null) {
         if ((undoInx - 1) === lastSaveUndoInx) onUnsavedData(false)
         else if (undoInx === lastSaveUndoInx) onUnsavedData(true)
       }
@@ -155,7 +156,7 @@ export default function Editor( props) {
   };
 
   const canUndo = blockIsEdited || epiteleteHtml?.canUndo(bookCode);
-  const canRedo = epiteleteHtml?.canRedo(bookCode);
+  const canRedo = (!blockIsEdited) && epiteleteHtml?.canRedo(bookCode);
   const canSave = (blockIsEdited || hasUnsavedBlock) && (lastSaveUndoInx !== undoInx)
 
   const handlers = {
