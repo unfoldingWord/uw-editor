@@ -21,7 +21,7 @@ import GraftPopup from "./GraftPopup"
 const useStyles = makeStyles({
   root: (props) => {
     return {
-      [`& .MuiAccordion-root[index="${props.chapter}"] .mark.verses[data-atts-number="${props.verse}"]`]: {
+      [`& .MuiAccordion-root[index="${props.chapter - ( props.hasIntroduction ? 0 : 1 )}"] .mark.verses[data-atts-number="${props.verse}"]`]: {
         color: 'red',
       }
     }
@@ -46,6 +46,7 @@ export default function Editor( props) {
   const [lastSaveUndoInx, setLastSaveUndoInx] = useState(0)
   const readOptions = { readPipeline: "stripAlignmentPipeline" }
   const [sectionIndices, setSectionIndices] = useState({});
+  const [hasIntroduction, setHasIntroduction] = useState(false)
 
   const arrayToObject = (array, keyField) =>
     array.reduce((obj, item) => {
@@ -101,7 +102,7 @@ export default function Editor( props) {
   const id = popperOpen ? 'simple-popper' : undefined;
   
   const incUndoInx = () => {
-    if (onUnsavedData !== null) {
+    if (onUnsavedData) {
       if ((undoInx + 1) === lastSaveUndoInx) onUnsavedData(false)
       else if (undoInx === lastSaveUndoInx) onUnsavedData(true)
     }
@@ -110,7 +111,7 @@ export default function Editor( props) {
 
   const decUndoInx = () => {
     if (undoInx>0) {
-      if (onUnsavedData !== null) {
+      if (onUnsavedData) {
         if ((undoInx - 1) === lastSaveUndoInx) onUnsavedData(false)
         else if (undoInx === lastSaveUndoInx) onUnsavedData(true)
       }
@@ -215,11 +216,19 @@ export default function Editor( props) {
   const editorRef = useRef(null);
 
   useEffect( () => {
+    const firstChapterHeading = editorRef.current.querySelector(`.MuiAccordion-root[index="${sectionIndices[sequenceId]}"] .sectionHeading`)
+    if ( firstChapterHeading ) {
+      const hasIntro = Number(firstChapterHeading.dataset.chapterNumber) === sectionIndices[sequenceId]
+      setHasIntroduction( hasIntro )
+    }
+  }, [sequenceId, sectionIndices]);
+
+  useEffect( () => {
     if ( htmlPerf && sequenceId && editorRef.current && activeReference ) {
       const { chapter, verse } = activeReference
 
       let _sectionIndices = { ...sectionIndices }
-      _sectionIndices[sequenceId] = Number(chapter) - 1
+      _sectionIndices[sequenceId] = Number(chapter) - ( hasIntroduction ? 0 : 1)
       setSectionIndices(_sectionIndices)
 
       const verseElem = editorRef.current.querySelector(`span.mark.verses[data-atts-number='${verse}']`)
@@ -227,7 +236,8 @@ export default function Editor( props) {
         verseElem.scrollIntoView({ block: "center"})
       }
     }
-  }, [activeReference, htmlPerf, sequenceId, editorRef]) // eslint-disable-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeReference, htmlPerf, sequenceId, editorRef, hasIntroduction])
 
   const skeleton = (
     <Stack spacing={1}>
@@ -297,7 +307,7 @@ export default function Editor( props) {
     onSave: handleSave,
     showToggles: false
   }
-  const classes = useStyles(activeReference);
+  const classes = useStyles({hasIntroduction, ...activeReference});
   return (
     <div key="1" className={classes.root + ' Editor'} style={style} ref={editorRef}>
       <Buttons {...buttonsProps} />
@@ -326,11 +336,13 @@ Editor.propTypes = {
   bookId: PropTypes.string,
   /** Whether to show extra info in the js console */
   verbose: PropTypes.bool,
+  /** Book, chapter, verse to scroll to and highlight */
   activeReference: PropTypes.shape({
     bookId: PropTypes.string,
     chapter: PropTypes.number,
     verse: PropTypes.number,
   }),
+  /** Callback triggered when a verse is clicked on */
   onReferenceSelected: PropTypes.func,
 };
 

@@ -18,7 +18,10 @@ export const getCurrentChapter = (currentNode) => {
   let currentChapter
   const accordionElement = currentNode.parentElement.closest('.MuiAccordion-root')
   if ( accordionElement ) {
-    currentChapter = (Number(accordionElement.getAttribute('index')) + 1).toString()
+    const headingElement = accordionElement.querySelector('.sectionHeading')
+    if ( headingElement ) {
+      currentChapter = headingElement.dataset.chapterNumber
+    }
   }
   return currentChapter
 }
