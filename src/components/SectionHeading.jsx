@@ -11,7 +11,7 @@ export default function SectionHeading({ type: _type, content, show, index, verb
   }, []);
 
   const checkStr = content
-  const matchRes = checkStr.match(/<span class="mark.*chapter-(\d).*"/)
+  const matchRes = checkStr.match(/<span class="mark.*chapter-(\d+).*"/)
   const chNum = matchRes && matchRes[1] || ""
   let type = index && `Chapter ${chNum}`;
   type ||= (_type === "main") ? "Title & Introduction" : _type;
