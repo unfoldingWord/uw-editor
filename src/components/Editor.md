@@ -61,6 +61,11 @@ function Component () {
     bookId: 'tit',
     onSave,
     onReferenceSelected,
+    activeReference: {
+      bookId: 'tit',
+      chapter: 1,
+      verse: 4,
+    },
     verbose
   }
  
