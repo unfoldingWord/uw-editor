@@ -18,7 +18,7 @@ import Popper from '@mui/material/Popper';
 import GraftPopup from "./GraftPopup"
 
 export default function Editor( props) {
-  const { onSave, onUnsavedData, epiteleteHtml, bookId, verbose, activeReference } = props;
+  const { onSave, onUnsavedData, epiteleteHtml, bookId, verbose, activeReference, onReferenceSelected } = props;
   const [graftSequenceId, setGraftSequenceId] = useState(null);
 
   // const [isSaving, startSaving] = useTransition();
@@ -207,16 +207,16 @@ export default function Editor( props) {
     if ( htmlPerf && sequenceId && editorRef.current && activeReference ) {
       const { chapter, verse } = activeReference
 
-      let _sectionIndices = { ...sectionIndices };
-      _sectionIndices[sequenceId] = chapter;
-      setSectionIndices(_sectionIndices);
+      let _sectionIndices = { ...sectionIndices }
+      _sectionIndices[sequenceId] = Number(chapter) - 1
+      setSectionIndices(_sectionIndices)
 
       const verseElem = editorRef.current.querySelector(`span.mark.verses[data-atts-number='${verse}']`)
       if (verseElem) {
-        verseElem.scrollIntoView({behavior: "smooth", block: "center"})
+        verseElem.scrollIntoView({ block: "center"})
       }
     }
-  }, [activeReference, htmlPerf, sequenceId, editorRef])
+  }, [activeReference, htmlPerf, sequenceId, editorRef]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const skeleton = (
     <Stack spacing={1}>
@@ -252,7 +252,7 @@ export default function Editor( props) {
       section: Section,
       sectionHeading: SectionHeading,
       sectionBody: SectionBody,
-      block: RecursiveBlock,
+      block: (__props) => RecursiveBlock({ htmlPerf, onHtmlPerf, sequenceIds, addSequenceId, onReferenceSelected, ...__props }),
     },
     options,
     handlers,
@@ -284,7 +284,7 @@ export default function Editor( props) {
     setToggles,
     canSave,
     onSave: handleSave,
-    showToggles:false
+    showToggles: false
   }
 
   return (
@@ -320,6 +320,7 @@ Editor.propTypes = {
     chapter: PropTypes.number,
     verse: PropTypes.number,
   }),
+  onReferenceSelected: PropTypes.func,
 };
 
 Editor.defaultProps = {

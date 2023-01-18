@@ -2,7 +2,7 @@
 /* eslint-disable no-unused-vars */
 import React, { useEffect } from 'react'
 import { HtmlPerfEditor } from '@xelah/type-perf-html'
-import { getCurrentVerse } from '../helpers/getCurrentVerse'
+import { getCurrentVerse, getCurrentChapter } from '../helpers/getReferences'
 
 const getTarget = ({ content }) => {
   const div = document.createElement("div");
@@ -25,6 +25,8 @@ export default function RecursiveBlock({
   index,
   verbose,
   setFootNote,
+  bookId,
+  onReferenceSelected,
   ...props
 }) {
   useEffect(() => {
@@ -50,7 +52,10 @@ export default function RecursiveBlock({
     const range = document.getSelection().getRangeAt(0)
     const selectedNode = range.startContainer
     const verse = getCurrentVerse(selectedNode)
-    console.log( verse )
+    const chapter = getCurrentChapter(selectedNode)
+    if ( onReferenceSelected && chapter && verse ) {
+      onReferenceSelected({ bookId, chapter, verse })
+    }
   }
 
   let component;
