@@ -1,4 +1,5 @@
 import * as React from "react";
+import PropTypes from "prop-types";
 import {
   InputAdornment,
   TextField,
@@ -7,26 +8,20 @@ import {
 } from "@mui/material";
 import { VscPreserveCase } from "react-icons/vsc";
 
-export function ReplaceBox(props) {
-  const [replaceOptions, setReplaceOptions] = React.useState(() => [
-    "isRegex",
-    "shouldMatchCase",
-    "isCaseSensitive",
-    "shouldMatchWord",
-  ]);
+export function ReplaceBox({ defaultOptions = [], onChangeOptions, ...props }) {
+  const [replaceOptions, setReplaceOptions] = React.useState(() => defaultOptions);
 
   const handleReplaceOptions = (event, newOptions) => {
     setReplaceOptions(newOptions);
+    onChangeOptions(newOptions);
   };
-
-  console.log({ replaceOptions });
 
   return (
     <>
       <TextField
         {...props}
         label="Replace"
-        size="medium"
+        size="small"
         margin={"dense"}
         maxRows={10}
         multiline
@@ -41,9 +36,9 @@ export function ReplaceBox(props) {
                 onChange={handleReplaceOptions}
               >
                 <ToggleButton
-                  value="shouldMatchCase"
-                  aria-label="shouldMatchCase"
-                  title="shouldMatchCase"
+                  value="isCasePreserved"
+                  aria-label="isCasePreserved"
+                  title="Preserve Case"
                 >
                   <VscPreserveCase size={"1.5em"} />
                 </ToggleButton>
@@ -56,3 +51,8 @@ export function ReplaceBox(props) {
     </>
   );
 }
+
+ReplaceBox.propTypes = {
+  onChangeOptions: PropTypes.func,
+  defaultOptions: PropTypes.array
+};

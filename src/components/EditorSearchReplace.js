@@ -1,20 +1,23 @@
 import React from "react";
-import SearchReplace from "./SearchReplaceWrapper";
 import PropTypes from "prop-types";
 import EpiteleteHtml from "epitelete-html";
+import useFindAndReplace from "./useFindAndReplace";
+import SearchReplaceUI from "./SearchReplaceUI";
 
 export default function EditorSearchReplace({
   epiteleteHtml,
   bookCode,
-  onReplace: _onReplace,
+  onReplace: _onReplace = () => {},
+  onSearch: _onSearch = () => {},
 }) {
 
-  if (!epiteleteHtml) return <></>;
+  const docSetId = epiteleteHtml?.docSetId || ""
 
   const buildResults = (results, sourceKey) => {
+    // console.log({results})
     return results.map((result) => ({
       ...result,
-      key: result.pointer,
+      key: result.resultKey,
       groupKey: sourceKey,
       hoverText: "hover:" + sourceKey,
     }));
@@ -26,19 +29,18 @@ export default function EditorSearchReplace({
     resultsKeys,
     options = {},
   }) => {
-    const { isRegex = true } = options;
     const data = {
       perf: {},
       params: {
         target,
         replacement,
-        pointers: resultsKeys,
-        config: { isRegex },
+        replacementKeys: resultsKeys,
+        config: { ...options, ctxLen: 30 },
       },
     };
     const report = await epiteleteHtml.makeDocumentReport(
       bookCode,
-      "searchReplace",
+      "findAndReplace",
       data
     );
     return report;
@@ -70,23 +72,26 @@ export default function EditorSearchReplace({
       replacement,
       options,
     });
+    _onSearch();
     return buildResults(results, sourceKey);
   };
 
-  const searchReplaceProps = {
+  const searchReplaceProps = useFindAndReplace({
     metadata: {
-      hoverText: `${epiteleteHtml.docSetId} - ${bookCode}`,
-      title: `${epiteleteHtml.docSetId} - ${bookCode}`,
+      hoverText: `${docSetId} - ${bookCode}`,
+      title: `${docSetId} - ${bookCode}`,
     },
-    sourcesKeys: epiteleteHtml ? [epiteleteHtml.docSetId] : [],
+    sourcesKeys: [docSetId],
     onReplace,
     onSearch,
-  };
-  return <SearchReplace {...searchReplaceProps}></SearchReplace>;
+  });
+
+  return <SearchReplaceUI {...searchReplaceProps}></SearchReplaceUI>;
 }
 
 EditorSearchReplace.propTypes = {
   epiteleteHtml: PropTypes.instanceOf(EpiteleteHtml),
   bookCode: PropTypes.string,
   onReplace: PropTypes.func,
+  onSearch: PropTypes.func,
 };

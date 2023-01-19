@@ -2,6 +2,7 @@ import { useContext, useState } from "react";
 import { useDeepCompareEffect } from "use-deep-compare";
 import { LocalPkCacheContext } from '../context/LocalPkCacheContext'
 import EpiteleteHtml from "epitelete-html";
+import findr from "../pipeline"
 
 export default function usePkImport( docSetBookId, usfmText ) {
   const [loading,setLoading] = useState(true)
@@ -53,12 +54,14 @@ export default function usePkImport( docSetBookId, usfmText ) {
     const addEpCache = (key, obj) => {
       setEpCache({ [key]: obj, ...epCache });
     }
+    
     if (done && proskomma && !epCache[docSetId]) {
       const _ep = new EpiteleteHtml({ 
         proskomma,
         docSetId,
-        options: { historySize: 100 }
+        options: { historySize: 100, ...findr }
       })
+      console.log({_ep})
       addEpCache(docSetId,_ep)
     }
   }, [docSetId,epCache,proskomma,done])

@@ -1,4 +1,5 @@
 import * as React from "react";
+import PropTypes from "prop-types";
 import {
   InputAdornment,
   TextField,
@@ -7,28 +8,25 @@ import {
 } from "@mui/material";
 import { VscCaseSensitive, VscRegex, VscWholeWord } from "react-icons/vsc";
 
-export function SearchBox(props) {
-  const [searchOptions, setSearchOptions] = React.useState(() => [
-    "isRegex",
-    "isCaseSensitive",
-    "shouldMatchWord",
-  ]);
+export function SearchBox({ defaultOptions = [], onChangeOptions, ...props }) {
+
+  const [searchOptions, setSearchOptions] = React.useState(() => defaultOptions);
 
   const handleSearchOptions = (event, newOptions) => {
     setSearchOptions(newOptions);
+    onChangeOptions(newOptions);
   };
-
-  console.log({ searchOptions });
 
   return (
     <>
       <TextField
         label="Search"
-        size="medium"
+        size="small"
         margin={"dense"}
         maxRows={10}
         multiline
         {...props}
+
         InputProps={{
           endAdornment: (
             <InputAdornment position="end">
@@ -40,23 +38,23 @@ export function SearchBox(props) {
                 onChange={handleSearchOptions}
               >
                 <ToggleButton
-                  value="isCaseSensitive"
-                  aria-label="isCaseSensitive"
-                  title="isCaseSensitive"
+                  value="isCaseMatched"
+                  aria-label="isCaseMatched"
+                  title="Match Case"
                 >
                   <VscCaseSensitive size={"1.5em"} />
                 </ToggleButton>
                 <ToggleButton
-                  value="shouldMatchWord"
-                  aria-label="shouldMatchWord"
-                  title="shouldMatchWord"
+                  value="isWordMatched"
+                  aria-label="isWordMatched"
+                  title="Match Whole Word"
                 >
                   <VscWholeWord size={"1.5em"} />
                 </ToggleButton>
                 <ToggleButton
                   value="isRegex"
                   aria-label="isRegex"
-                  title="isRegex"
+                  title="Use Regular Expression"
                 >
                   <VscRegex size={"1.5em"} />
                 </ToggleButton>
@@ -69,3 +67,8 @@ export function SearchBox(props) {
     </>
   );
 }
+
+SearchBox.propTypes = {
+  onChangeOptions: PropTypes.func,
+  defaultOptions: PropTypes.array
+};

@@ -25,10 +25,11 @@ export default function Editor( props) {
   const [orgUnaligned, setOrgUnaligned] = useState();
   const [brokenAlignedWords, setBrokenAlignedWords] = useState();
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const [openSearch, setOpenSearch] = useState(false);
 
   const bookCode = bookId.toUpperCase()
   const [lastSaveHistoryLength, setLastSaveHistoryLength] = useState(epiteleteHtml?.history[bookCode] ? epiteleteHtml.history[bookCode].stack.length : 1)
-  const readOptions = { readPipeline: "stripAlignment" }
+  const readOptions = { readPipeline: "stripAlignmentPipeline" }
   
   const arrayToObject = (array, keyField) =>
     array.reduce((obj, item) => {
@@ -87,7 +88,7 @@ export default function Editor( props) {
     if (perfChanged) setHtmlPerf(_htmlPerf);
 
     const saveNow = async () => {
-      const writeOptions = { writePipeline: "mergeAlignment", readPipeline: "stripAlignment" }
+      const writeOptions = { writePipeline: "mergeAlignmentPipeline", readPipeline: "stripAlignmentPipeline" }
       const newHtmlPerf = await epiteleteHtml.writeHtml( bookCode, sequenceId, _htmlPerf, writeOptions);
       if (verbose) console.log({ info: "Saved sequenceId", bookCode, sequenceId });
 
@@ -195,6 +196,9 @@ export default function Editor( props) {
   //   graftSequenceId,
   //   setGraftSequenceId,
   // };
+  const handleSearch = () => {
+    setOpenSearch(openSearch => !openSearch)
+  }
 
   const buttonsProps = {
     sectionable,
@@ -210,6 +214,7 @@ export default function Editor( props) {
     setToggles,
     canSave,
     onSave: handleSave,
+    onSearch: handleSearch
   }
 
   // const graftSequenceEditor = (
@@ -224,6 +229,8 @@ export default function Editor( props) {
     setHtmlAndUpdateUnaligned(newPerfHtml);
   }
 
+
+
   const editorSearchReplaceProps = {
     epiteleteHtml,
     bookCode,
@@ -232,8 +239,8 @@ export default function Editor( props) {
 
   return (
     <div key="1" className="Editor" style={style}>
-      <EditorSearchReplace {...editorSearchReplaceProps}></EditorSearchReplace>
       <Buttons {...buttonsProps} />
+      { openSearch ? <EditorSearchReplace {...editorSearchReplaceProps}></EditorSearchReplace> : null}
       <Popper id={id} open={open} anchorEl={anchorEl}>
         <Box sx={{ border: 1, p: 1, bgcolor: 'background.paper' }}>
           List of words with broken alignment:
