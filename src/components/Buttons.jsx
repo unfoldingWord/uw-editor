@@ -10,6 +10,7 @@ import {
   Save,
   AssignmentTurnedIn,
   AssignmentLate,
+  Search,
 } from '@mui/icons-material'
 import PropTypes from 'prop-types';
 
@@ -26,10 +27,11 @@ export default function Buttons(props) {
     allAligned, 
     onSave, 
     canSave,
+    onSearch,
     showToggles
   } = props;
   const togglesAll = useMemo(
-    () => ["sectionable", "blockable", "editable", "preview"],
+    () => ["sectionable", "blockable", "editable", "preview", "search"],
     []
   );
   const theme = useTheme()
@@ -153,6 +155,15 @@ export default function Buttons(props) {
       >
         <Save />
       </ToggleButton>
+      <ToggleButton
+        data-test-id="ToggleButtonSearch"
+        value="search"
+        aria-label="search"
+        onClick={onSearch}
+        title="Search"
+      >
+        <Search />
+      </ToggleButton>
     </ToggleButtonGroup>
   );
 }
@@ -168,5 +179,6 @@ Buttons.propTypes = {
   onShowUnaligned: PropTypes.func,
   allAligned: PropTypes.bool,
   canSave: PropTypes.bool,
+  onSearch: PropTypes.func,
   showToggles: PropTypes.bool,
 };

@@ -4,13 +4,13 @@ import { useDeepCompareCallback, useDeepCompareEffect } from "use-deep-compare";
 import isEqual from 'lodash.isequal';
 import { HtmlPerfEditor } from "@xelah/type-perf-html";
 import EpiteleteHtml from "epitelete-html";
-
 import { Skeleton, Stack } from "@mui/material";
 import useEditorState from "../hooks/useEditorState";
 import Section from "./Section";
 import SectionHeading from "./SectionHeading";
 import SectionBody from "./SectionBody";
 import Buttons from "./Buttons"
+import EditorSearchReplace from './EditorSearchReplace';
 import Box from '@mui/material/Box';
 import Popper from '@mui/material/Popper';
 
@@ -32,6 +32,7 @@ export default function Editor( props) {
   const bookCode = bookId.toUpperCase()
   const [lastSaveUndoInx, setLastSaveUndoInx] = useState(0)
   const readOptions = { readPipeline: "stripAlignmentPipeline" }
+  const [openSearch, setOpenSearch] = useState(false);
   
   const arrayToObject = (array, keyField) =>
     array.reduce((obj, item) => {
@@ -67,7 +68,6 @@ export default function Editor( props) {
     }
   }, [epiteleteHtml, bookCode, setOrgUnaligned, setHtmlPerf]);
 
-  
   const handleUnalignedClick = (event) => {
     setAnchorEl(anchorEl ? null : event.currentTarget);
   };
@@ -210,6 +210,7 @@ export default function Editor( props) {
     editable,
     preview
   };
+
   const htmlEditorProps = {
     htmlPerf,
     onInput,
@@ -227,6 +228,9 @@ export default function Editor( props) {
     verbose,
   };
 
+  const handleSearch = () => {
+    setOpenSearch(openSearch => !openSearch)
+  }
 
   const graftProps = {
     ...htmlEditorProps,
@@ -250,12 +254,32 @@ export default function Editor( props) {
     setToggles,
     canSave,
     onSave: handleSave,
+    onSearch: handleSearch,
     showToggles:false
+  }
+
+  // const graftSequenceEditor = (
+  //   <>
+  //     <h2>Graft Sequence Editor</h2>
+  //     <HtmlPerfEditor key="2" {...graftProps} />
+  //   </>
+  // );
+
+  const onReplace = async () => {
+    const newPerfHtml = await epiteleteHtml.readHtml(bookCode, readOptions);
+    setHtmlAndUpdateUnaligned(newPerfHtml);
+  }
+
+  const editorSearchReplaceProps = {
+    epiteleteHtml,
+    bookCode,
+    onReplace,
   }
 
   return (
     <div key="1" className="Editor" style={style}>
       <Buttons {...buttonsProps} />
+      { openSearch ? <EditorSearchReplace {...editorSearchReplaceProps}></EditorSearchReplace> : null}
       <Popper id={id} open={popperOpen} anchorEl={anchorEl}>
         <Box sx={{ border: 1, p: 1, bgcolor: 'background.paper' }}>
           List of words with broken alignment:
