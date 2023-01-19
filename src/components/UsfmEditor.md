@@ -6,7 +6,6 @@ The demo demonstrates using the UsfmEditor in standalone mode
 
 ```js
 import { useState, useEffect } from 'react';
-import usePkImport from "../hooks/usePkImport";
 import { usfmText } from '../data/tit.en.ult.usfm.js';
 import PkCacheProvider from '../context/LocalPkCacheContext'
 

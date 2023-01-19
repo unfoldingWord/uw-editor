@@ -14,22 +14,25 @@ import EditorSearchReplace from './EditorSearchReplace';
 import Box from '@mui/material/Box';
 import Popper from '@mui/material/Popper';
 
-// import GraftPopup from "./GraftPopup"
+import GraftPopup from "./GraftPopup"
 
 export default function Editor( props) {
-  const { onSave, epiteleteHtml, bookId, verbose } = props;
-  // const [graftSequenceId, setGraftSequenceId] = useState(null);
+  const { onSave, onUnsavedData, epiteleteHtml, bookId, verbose } = props;
+  const [graftSequenceId, setGraftSequenceId] = useState(null);
 
   // const [isSaving, startSaving] = useTransition();
   const [htmlPerf, setHtmlPerf] = useState();
   const [orgUnaligned, setOrgUnaligned] = useState();
   const [brokenAlignedWords, setBrokenAlignedWords] = useState();
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const [openSearch, setOpenSearch] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [blockIsEdited, setBlockIsEdited] = useState(false);
+  const [hasUnsavedBlock, setHasUnsavedBlock] = useState(false);
+  const [undoInx, setUndoInx] = useState(0)
 
   const bookCode = bookId.toUpperCase()
-  const [lastSaveHistoryLength, setLastSaveHistoryLength] = useState(epiteleteHtml?.history[bookCode] ? epiteleteHtml.history[bookCode].stack.length : 1)
+  const [lastSaveUndoInx, setLastSaveUndoInx] = useState(0)
   const readOptions = { readPipeline: "stripAlignmentPipeline" }
+  const [openSearch, setOpenSearch] = useState(false);
   
   const arrayToObject = (array, keyField) =>
     array.reduce((obj, item) => {
@@ -45,9 +48,8 @@ export default function Editor( props) {
       Object.entries(obj).forEach(([chNum, chObj]) => {
         Object.entries(chObj).forEach(([vNum, verseArr]) => {
           verseArr.forEach(wObj => {
-            resArray.push(
-              { id: `${chNum}:${vNum}-${wObj?.word}-${wObj?.occurrence}/${wObj?.totalOccurrences}`, wObj }
-            )
+            const occurrenceStr = (wObj?.totalOccurrences > 1) ? `-${wObj?.occurrence}/${wObj?.totalOccurrences}` : ""
+            resArray.push({ id: `${chNum}:${vNum}-${wObj?.word}${occurrenceStr}`, wObj })
           })
         })
       })
@@ -77,16 +79,45 @@ export default function Editor( props) {
       .filter(x => !nextUnalignedData[x])
       .concat(Object.keys(nextUnalignedData).filter(x => !orgUnaligned[x]))
     setBrokenAlignedWords(diffUnaligned)
+    setHasUnsavedBlock(true)
     setHtmlPerf(newHtmlPerf)
   }
 
-  const open = Boolean(anchorEl);
-  const id = open ? 'simple-popper' : undefined;
+  const popperOpen = Boolean(anchorEl);
+  const id = popperOpen ? 'simple-popper' : undefined;
+  
+  const incUndoInx = () => {
+    if (onUnsavedData != null) {
+      if ((undoInx + 1) === lastSaveUndoInx) onUnsavedData(false)
+      else if (undoInx === lastSaveUndoInx) onUnsavedData(true)
+    }
+    setUndoInx(undoInx+1)
+  }
+
+  const decUndoInx = () => {
+    if (undoInx>0) {
+      if (onUnsavedData != null) {
+        if ((undoInx - 1) === lastSaveUndoInx) onUnsavedData(false)
+        else if (undoInx === lastSaveUndoInx) onUnsavedData(true)
+      }
+      setUndoInx(undoInx-1)
+    }
+  }
+
+  const onInput = () => {
+    if (!blockIsEdited) {
+      incUndoInx()
+      setBlockIsEdited(true)
+    }
+  }
 
   const onHtmlPerf = useDeepCompareCallback(( _htmlPerf, { sequenceId }) => {
+
+    setBlockIsEdited(false)
     const perfChanged = !isEqual(htmlPerf, _htmlPerf);
     if (perfChanged) setHtmlPerf(_htmlPerf);
 
+    if (verbose) console.log('onhtmlperf', perfChanged)
     const saveNow = async () => {
       const writeOptions = { writePipeline: "mergeAlignmentPipeline", readPipeline: "stripAlignmentPipeline" }
       const newHtmlPerf = await epiteleteHtml.writeHtml( bookCode, sequenceId, _htmlPerf, writeOptions);
@@ -101,32 +132,39 @@ export default function Editor( props) {
   }, [htmlPerf, bookCode, orgUnaligned, setBrokenAlignedWords, setHtmlPerf]);
 
   const handleSave = async () => {
-    setLastSaveHistoryLength( epiteleteHtml?.history[bookCode].stack.length )
+    setLastSaveUndoInx(undoInx)
+    setBlockIsEdited(false)
+    setHasUnsavedBlock(false)
     const usfmText = await epiteleteHtml.readUsfm( bookCode )
+    onUnsavedData && onUnsavedData(false)
     onSave && onSave(bookCode,usfmText)
   }
 
   const undo = async () => {
+    decUndoInx()
+    setBlockIsEdited(false)
     const newPerfHtml = await epiteleteHtml.undoHtml(bookCode, readOptions);
     setHtmlAndUpdateUnaligned(newPerfHtml);
   };
 
   const redo = async () => {
+    incUndoInx()
+    setBlockIsEdited(false)
     const newPerfHtml = await epiteleteHtml.redoHtml(bookCode, readOptions);
     setHtmlAndUpdateUnaligned(newPerfHtml);
   };
 
-  const canUndo = epiteleteHtml?.canUndo(bookCode);
-  const canRedo = epiteleteHtml?.canRedo(bookCode);
-  const canSave = epiteleteHtml?.history[bookCode] && epiteleteHtml.history[bookCode].stack.length > lastSaveHistoryLength;
+  const canUndo = blockIsEdited || epiteleteHtml?.canUndo(bookCode);
+  const canRedo = (!blockIsEdited) && epiteleteHtml?.canRedo(bookCode);
+  const canSave = (blockIsEdited || hasUnsavedBlock) && (lastSaveUndoInx !== undoInx)
 
-  // const handlers = {
-  //   onBlockClick: ({ element }) => {
-  //     const _sequenceId = element.dataset.target;
-  //     // if (_sequenceId && !isInline) addSequenceId(_sequenceId);
-  //     if (_sequenceId) setGraftSequenceId(_sequenceId);
-  //   },
-  // };
+  const handlers = {
+    onBlockClick: ({ element }) => {
+      const _sequenceId = element.dataset.target;
+      // if (_sequenceId && !isInline) addSequenceId(_sequenceId);
+      if (_sequenceId) setGraftSequenceId(_sequenceId);
+    },
+  };
 
   const {
     state: {
@@ -175,6 +213,7 @@ export default function Editor( props) {
 
   const htmlEditorProps = {
     htmlPerf,
+    onInput,
     onHtmlPerf,
     sequenceIds,
     addSequenceId,
@@ -184,21 +223,22 @@ export default function Editor( props) {
       sectionBody: SectionBody,
     },
     options,
-    // handlers,
+    handlers,
     decorators: {},
     verbose,
   };
 
-  // const graftProps = {
-  //   ...htmlEditorProps,
-  //   options: { ...options, sectionable: false },
-  //   sequenceIds: [graftSequenceId],
-  //   graftSequenceId,
-  //   setGraftSequenceId,
-  // };
   const handleSearch = () => {
     setOpenSearch(openSearch => !openSearch)
   }
+
+  const graftProps = {
+    ...htmlEditorProps,
+    options: { ...options, sectionable: false },
+    sequenceIds: [graftSequenceId],
+    graftSequenceId,
+    setGraftSequenceId,
+  };
 
   const buttonsProps = {
     sectionable,
@@ -214,7 +254,8 @@ export default function Editor( props) {
     setToggles,
     canSave,
     onSave: handleSave,
-    onSearch: handleSearch
+    onSearch: handleSearch,
+    showToggles:false
   }
 
   // const graftSequenceEditor = (
@@ -229,8 +270,6 @@ export default function Editor( props) {
     setHtmlAndUpdateUnaligned(newPerfHtml);
   }
 
-
-
   const editorSearchReplaceProps = {
     epiteleteHtml,
     bookCode,
@@ -241,7 +280,7 @@ export default function Editor( props) {
     <div key="1" className="Editor" style={style}>
       <Buttons {...buttonsProps} />
       { openSearch ? <EditorSearchReplace {...editorSearchReplaceProps}></EditorSearchReplace> : null}
-      <Popper id={id} open={open} anchorEl={anchorEl}>
+      <Popper id={id} open={popperOpen} anchorEl={anchorEl}>
         <Box sx={{ border: 1, p: 1, bgcolor: 'background.paper' }}>
           List of words with broken alignment:
           <Box>
@@ -250,14 +289,24 @@ export default function Editor( props) {
         </Box>
       </Popper>
       {sequenceId && htmlPerf ? <HtmlPerfEditor {...htmlEditorProps} /> : skeleton}
-      {/* <GraftPopup {...graftProps} /> */}
+      <GraftPopup {...graftProps} />
     </div>
   );
 };
 
 Editor.propTypes = {
+  /** Method to call when save button is pressed */
   onSave: PropTypes.func,
+  /** Callback method to receive information about unsaved data */
+  onUnsavedData: PropTypes.func,
+  /** Instance of EpiteleteHtml class */
   epiteleteHtml: PropTypes.instanceOf(EpiteleteHtml),
+  /** bookId to identify the content in the editor */
   bookId: PropTypes.string,
+  /** Whether to show extra info in the js console */
   verbose: PropTypes.bool,
 };
+
+Editor.defaultProps = {
+  verbose: false
+}

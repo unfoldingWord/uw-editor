@@ -10,7 +10,10 @@ export default function SectionHeading({ type: _type, content, show, index, verb
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  let type = index && `Chapter ${index}`;
+  const checkStr = content
+  const matchRes = checkStr.match(/<span class="mark.*chapter-(\d+).*"/)
+  const chNum = matchRes && matchRes[1] || ""
+  let type = index && `Chapter ${chNum}`;
   type ||= (_type === "main") ? "Title & Introduction" : _type;
 
   return (

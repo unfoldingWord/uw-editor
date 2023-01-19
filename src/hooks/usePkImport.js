@@ -27,9 +27,7 @@ export default function usePkImport( docSetBookId, usfmText ) {
 
   // monitor the pkCache and import when usfmText is available
   useDeepCompareEffect(() => {
-    const addpkCache = (key, str) => {
-      setPkCache({ [key]: str, ...pkCache });
-    }
+    const addPkCache = (key, str) => setPkCache({ [key]: str, ...pkCache })
     async function doImportPk() {
       proskomma.importDocument(
         { org, lang, abbr },
@@ -39,11 +37,11 @@ export default function usePkImport( docSetBookId, usfmText ) {
     }
   
     if (usfmText) {
-      if (proskomma && !pkCache[docSetBookId]) {
-        doImportPk()
-        addpkCache(docSetBookId,bookId)
-        setDone(true)
-      } else {
+      if (proskomma) {
+        if (!pkCache[docSetBookId]) {
+          doImportPk()
+          addPkCache(docSetBookId,bookId)
+        }
         setLoading(false)
       }
     }
@@ -51,20 +49,19 @@ export default function usePkImport( docSetBookId, usfmText ) {
 
   // monitor the epCache and create Epitelete instances as needed
   useDeepCompareEffect(() => {
-    const addEpCache = (key, obj) => {
-      setEpCache({ [key]: obj, ...epCache });
+    const addEpCache = (key, obj) => setEpCache({ [key]: obj, ...epCache })
+    if (!loading && proskomma) {
+      if (!epCache[docSetId]) {
+        const _ep = new EpiteleteHtml({ 
+          proskomma,
+          docSetId,
+          options: { historySize: 100, ...findr }
+        })
+        addEpCache(docSetId,_ep)
+      }
+      setDone(true)
     }
-    
-    if (done && proskomma && !epCache[docSetId]) {
-      const _ep = new EpiteleteHtml({ 
-        proskomma,
-        docSetId,
-        options: { historySize: 100, ...findr }
-      })
-      console.log({_ep})
-      addEpCache(docSetId,_ep)
-    }
-  }, [docSetId,epCache,proskomma,done])
+  }, [docSetId,epCache,proskomma,loading])
   
   return { loading, done }
 }

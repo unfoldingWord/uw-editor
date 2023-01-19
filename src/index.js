@@ -3,6 +3,7 @@ import UsfmEditor from "./components/UsfmEditor";
 import PkEditor from "./components/PkEditor";
 import SearchAndReplace from "./components/SearchAndReplace"
 import PkCacheProvider from "./context/LocalPkCacheContext";
+import usePkImport from "./hooks/usePkImport";
 
 export {
   Editor,
@@ -10,4 +11,5 @@ export {
   PkEditor,
   SearchAndReplace,
   PkCacheProvider,
+  usePkImport,
 };

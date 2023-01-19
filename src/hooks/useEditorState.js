@@ -8,7 +8,7 @@ export default function useEditorState(props) {
     sectionable: true,
     blockable: true,
     editable: true,
-    preview: false,
+    preview: true,
     ...props
   };
 
