@@ -4,7 +4,6 @@ import { useDeepCompareCallback, useDeepCompareEffect, useDeepCompareMemo } from
 import isEqual from 'lodash.isequal';
 import { HtmlPerfEditor } from "@xelah/type-perf-html";
 import EpiteleteHtml from "epitelete-html";
-import { makeStyles } from '@mui/styles';
 
 import { Skeleton, Stack } from "@mui/material";
 import useEditorState from "../hooks/useEditorState";
@@ -17,16 +16,6 @@ import Box from '@mui/material/Box';
 import Popper from '@mui/material/Popper';
 
 import GraftPopup from "./GraftPopup"
-
-const useStyles = makeStyles({
-  root: (props) => {
-    return {
-      [`& .MuiAccordion-root[index="${props.chapter - ( props.hasIntroduction ? 0 : 1 )}"] .mark.verses[data-atts-number="${props.verse}"]`]: {
-        color: 'red',
-      }
-    }
-  },
-});
 
 export default function Editor( props) {
   const { onSave, onUnsavedData, epiteleteHtml, bookId, verbose, activeReference, onReferenceSelected } = props;
@@ -231,8 +220,14 @@ export default function Editor( props) {
       _sectionIndices[sequenceId] = Number(chapter) - ( hasIntroduction ? 0 : 1)
       setSectionIndices(_sectionIndices)
 
+      const existingVerse = editorRef.current.querySelector(`span.mark.verses.highlight-verse`)
+      if ( existingVerse ) {
+        existingVerse.classList.remove('highlight-verse')
+      }
+
       const verseElem = editorRef.current.querySelector(`span.mark.verses[data-atts-number='${verse}']`)
       if (verseElem) {
+        verseElem.classList.add('highlight-verse')
         verseElem.scrollIntoView({ block: "center"})
       }
     }
@@ -307,9 +302,8 @@ export default function Editor( props) {
     onSave: handleSave,
     showToggles: false
   }
-  const classes = useStyles({hasIntroduction, ...activeReference});
   return (
-    <div key="1" className={classes.root + ' Editor'} style={style} ref={editorRef}>
+    <div key="1" className="Editor" style={style} ref={editorRef}>
       <Buttons {...buttonsProps} />
       <Popper id={id} open={popperOpen} anchorEl={anchorEl}>
         <Box sx={{ border: 1, p: 1, bgcolor: 'background.paper' }}>
