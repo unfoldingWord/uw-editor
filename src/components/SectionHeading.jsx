@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+import React, { useEffect } from 'react'
+import PropTypes from 'prop-types';
 
 // eslint-disable-next-line react/prop-types, no-unused-vars
 export default function SectionHeading({ type: _type, content, show, index, verbose, ...props }) {
@@ -10,14 +11,12 @@ export default function SectionHeading({ type: _type, content, show, index, verb
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const checkStr = content
-  const matchRes = checkStr.match(/<span class="mark.*chapter-(\d+).*"/)
-  const chNum = matchRes && matchRes[1] || ""
-  let type = index && `Chapter ${chNum}`;
-  type ||= (_type === "main") ? "Title & Introduction" : _type;
+  const matchRes = content.match(/<span class="mark[^"]+chapter-(\d+)/)
+  const chNum = matchRes && matchRes[1] || 0
+  const type = chNum ? `Chapter ${chNum}` : "Title & Introduction";
 
   return (
-    <div className='sectionHeading' {...props}>
+    <div className='sectionHeading' data-chapter-number={chNum} {...props}>
       <span className='expand'>
         {show ? '' : '...'}
         {type}
@@ -26,3 +25,7 @@ export default function SectionHeading({ type: _type, content, show, index, verb
     </div>
   );
 };
+
+SectionHeading.propTypes = {
+  content: PropTypes.string,
+}

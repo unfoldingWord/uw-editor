@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import PropTypes from 'prop-types';
-import { useDeepCompareCallback, useDeepCompareEffect } from "use-deep-compare";
+import { useDeepCompareCallback, useDeepCompareEffect, useDeepCompareMemo } from "use-deep-compare";
 import isEqual from 'lodash.isequal';
 import { HtmlPerfEditor } from "@xelah/type-perf-html";
 import EpiteleteHtml from "epitelete-html";
@@ -10,6 +10,7 @@ import useEditorState from "../hooks/useEditorState";
 import Section from "./Section";
 import SectionHeading from "./SectionHeading";
 import SectionBody from "./SectionBody";
+import RecursiveBlock from "./RecursiveBlock";
 import Buttons from "./Buttons"
 import Box from '@mui/material/Box';
 import Popper from '@mui/material/Popper';
@@ -17,7 +18,7 @@ import Popper from '@mui/material/Popper';
 import GraftPopup from "./GraftPopup"
 
 export default function Editor( props) {
-  const { onSave, onUnsavedData, epiteleteHtml, bookId, verbose } = props;
+  const { onSave, onUnsavedData, epiteleteHtml, bookId, verbose, activeReference, onReferenceSelected } = props;
   const [graftSequenceId, setGraftSequenceId] = useState(null);
 
   // const [isSaving, startSaving] = useTransition();
@@ -30,9 +31,12 @@ export default function Editor( props) {
   const [undoInx, setUndoInx] = useState(0)
 
   const bookCode = bookId.toUpperCase()
+
   const [lastSaveUndoInx, setLastSaveUndoInx] = useState(0)
   const readOptions = { readPipeline: "stripAlignmentPipeline" }
-  
+  const [sectionIndices, setSectionIndices] = useState({});
+  const [hasIntroduction, setHasIntroduction] = useState(false)
+
   const arrayToObject = (array, keyField) =>
     array.reduce((obj, item) => {
       let iCopy = Object.assign({}, item);
@@ -158,14 +162,6 @@ export default function Editor( props) {
   const canRedo = (!blockIsEdited) && epiteleteHtml?.canRedo(bookCode);
   const canSave = (blockIsEdited || hasUnsavedBlock) && (lastSaveUndoInx !== undoInx)
 
-  const handlers = {
-    onBlockClick: ({ element }) => {
-      const _sequenceId = element.dataset.target;
-      // if (_sequenceId && !isInline) addSequenceId(_sequenceId);
-      if (_sequenceId) setGraftSequenceId(_sequenceId);
-    },
-  };
-
   const {
     state: {
       sectionable,
@@ -195,6 +191,49 @@ export default function Editor( props) {
   }, [htmlPerf, sequenceIds, setSequenceId, setSequenceIds]
   )
 
+  const sectionIndex = useDeepCompareMemo(() => (
+    sectionIndices[sequenceId] || 0
+  ), [sectionIndices, sequenceId]);
+
+  // eslint-disable-next-line no-unused-vars
+  const onSectionClick = useDeepCompareCallback(({ content: _content, index }) => {
+    let _sectionIndices = { ...sectionIndices };
+    _sectionIndices[sequenceId] = index;
+    setSectionIndices(_sectionIndices);
+  }, [setSectionIndices, sectionIndices]);
+
+  const editorRef = useRef(null);
+
+  useEffect( () => {
+    const firstChapterHeading = editorRef.current.querySelector(`.MuiAccordion-root[index="${sectionIndices[sequenceId]}"] .sectionHeading`)
+    if ( firstChapterHeading ) {
+      const hasIntro = Number(firstChapterHeading.dataset.chapterNumber) === sectionIndices[sequenceId]
+      setHasIntroduction( hasIntro )
+    }
+  }, [sequenceId, sectionIndices]);
+
+  useEffect( () => {
+    if ( htmlPerf && sequenceId && editorRef.current && activeReference ) {
+      const { chapter, verse } = activeReference
+
+      let _sectionIndices = { ...sectionIndices }
+      _sectionIndices[sequenceId] = Number(chapter) - ( hasIntroduction ? 0 : 1)
+      setSectionIndices(_sectionIndices)
+
+      const existingVerse = editorRef.current.querySelector(`span.mark.verses.highlight-verse`)
+      if ( existingVerse ) {
+        existingVerse.classList.remove('highlight-verse')
+      }
+
+      const verseElem = editorRef.current.querySelector(`span.mark.verses[data-atts-number='${verse}']`)
+      if (verseElem) {
+        verseElem.classList.add('highlight-verse')
+        verseElem.scrollIntoView({ block: "center"})
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeReference, htmlPerf, sequenceId, editorRef, hasIntroduction])
+
   const skeleton = (
     <Stack spacing={1}>
       <Skeleton key='1' variant="text" height="8em" sx={{ bgcolor: 'white' }} />
@@ -203,6 +242,15 @@ export default function Editor( props) {
       <Skeleton key='4' variant="rectangular" height="16em" sx={{ bgcolor: 'white' }} />
     </Stack>
   );
+
+  const handlers = {
+    onBlockClick: ({ element }) => {
+      const _sequenceId = element.dataset.target;
+      // if (_sequenceId && !isInline) addSequenceId(_sequenceId);
+      if (_sequenceId) setGraftSequenceId(_sequenceId);
+    },
+    onSectionClick,
+  };
 
   const options = {
     sectionable,
@@ -220,10 +268,12 @@ export default function Editor( props) {
       section: Section,
       sectionHeading: SectionHeading,
       sectionBody: SectionBody,
+      block: (__props) => RecursiveBlock({ htmlPerf, onHtmlPerf, sequenceIds, addSequenceId, onReferenceSelected, ...__props }),
     },
     options,
     handlers,
     decorators: {},
+    sectionIndex,
     verbose,
   };
 
@@ -250,11 +300,10 @@ export default function Editor( props) {
     setToggles,
     canSave,
     onSave: handleSave,
-    showToggles:false
+    showToggles: false
   }
-
   return (
-    <div key="1" className="Editor" style={style}>
+    <div key="1" className="Editor" style={style} ref={editorRef}>
       <Buttons {...buttonsProps} />
       <Popper id={id} open={popperOpen} anchorEl={anchorEl}>
         <Box sx={{ border: 1, p: 1, bgcolor: 'background.paper' }}>
@@ -281,6 +330,14 @@ Editor.propTypes = {
   bookId: PropTypes.string,
   /** Whether to show extra info in the js console */
   verbose: PropTypes.bool,
+  /** Book, chapter, verse to scroll to and highlight */
+  activeReference: PropTypes.shape({
+    bookId: PropTypes.string,
+    chapter: PropTypes.number,
+    verse: PropTypes.number,
+  }),
+  /** Callback triggered when a verse is clicked on */
+  onReferenceSelected: PropTypes.func,
 };
 
 Editor.defaultProps = {

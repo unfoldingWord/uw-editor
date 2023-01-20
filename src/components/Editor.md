@@ -45,6 +45,10 @@ function Component () {
     console.log(bookCode)
     console.log(usfmText)
   }
+  
+  const onReferenceSelected = (reference) => {
+    console.log(reference)
+  }
 
   const docSetId = 'KentR1235/fr_lsg_tit_book'
   
@@ -56,6 +60,12 @@ function Component () {
     epiteleteHtml,
     bookId: 'tit',
     onSave,
+    onReferenceSelected,
+    activeReference: {
+      bookId: 'tit',
+      chapter: 1,
+      verse: 4,
+    },
     verbose
   }
  
