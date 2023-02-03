@@ -10,7 +10,7 @@ import Section from "./Section";
 import SectionHeading from "./SectionHeading";
 import SectionBody from "./SectionBody";
 import Buttons from "./Buttons"
-import EditorSearchReplace from './EditorSearchReplace';
+import EditorSearchReplace from './snr-ui-components/EditorSearchReplace';
 import Box from '@mui/material/Box';
 import Popper from '@mui/material/Popper';
 
