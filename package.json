@@ -23,7 +23,7 @@
     "react-highlight-words": "^0.18.0",
     "use-debounce": "^9.0.3",
     "@xelah/type-perf-html": "^1.0.2",
-    "epitelete-html": "0.2.18",
+    "epitelete-html": "0.2.16",
     "proskomma-react-hooks": "^2.4.0"
   },
   "devDependencies": {
