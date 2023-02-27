@@ -18,7 +18,11 @@ import Popper from '@mui/material/Popper';
 import GraftPopup from "./GraftPopup"
 
 export default function Editor( props) {
-  const { onSave, onUnsavedData, epiteleteHtml, bookId, verbose, activeReference, onReferenceSelected } = props;
+  const { 
+    onSave, onUnsavedData, epiteleteHtml, 
+    bookId, hasInitialUnsavedData = false, 
+    verbose, activeReference, onReferenceSelected 
+  } = props;
   const [graftSequenceId, setGraftSequenceId] = useState(null);
 
   // const [isSaving, startSaving] = useTransition();
@@ -27,12 +31,12 @@ export default function Editor( props) {
   const [brokenAlignedWords, setBrokenAlignedWords] = useState();
   const [anchorEl, setAnchorEl] = useState(null);
   const [blockIsEdited, setBlockIsEdited] = useState(false);
-  const [hasUnsavedBlock, setHasUnsavedBlock] = useState(false);
+  const [hasUnsavedBlock, setHasUnsavedBlock] = useState(hasInitialUnsavedData);
   const [undoInx, setUndoInx] = useState(0)
 
   const bookCode = bookId.toUpperCase()
 
-  const [lastSaveUndoInx, setLastSaveUndoInx] = useState(0)
+  const [lastSaveUndoInx, setLastSaveUndoInx] = useState(hasInitialUnsavedData ? undefined : 0)
   const readOptions = { readPipeline: "stripAlignmentPipeline" }
   const [sectionIndices, setSectionIndices] = useState({});
   const [hasIntroduction, setHasIntroduction] = useState(false)
@@ -328,6 +332,8 @@ Editor.propTypes = {
   epiteleteHtml: PropTypes.instanceOf(EpiteleteHtml),
   /** bookId to identify the content in the editor */
   bookId: PropTypes.string,
+  /** Optionally seed the editor to indicated unsaved data */
+  hasInitialUnsavedData: PropTypes.bool,
   /** Whether to show extra info in the js console */
   verbose: PropTypes.bool,
   /** Book, chapter, verse to scroll to and highlight */
