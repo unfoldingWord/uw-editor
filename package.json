@@ -1,7 +1,7 @@
 {
   "name": "uw-editor",
   "description": "A React Component Library for editing PERF.",
-  "version": "0.1.23",
+  "version": "0.1.24",
   "homepage": "https://uw-editor.netlify.app/",
   "license": "MIT",
   "repository": {
