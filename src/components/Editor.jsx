@@ -156,10 +156,9 @@ export default function Editor( props) {
     setLastSaveUndoInx(getUndoInx())
     setBlockIsEdited(false)
     setHasUnsavedBlock(false)
-    // const usfmText = await epiteleteHtml.readUsfm( bookCode )
+    const usfmText = await epiteleteHtml.readUsfm( bookCode )
     onUnsavedData && onUnsavedData(false)
-    // onSave && onSave(bookCode,usfmText)
-    onSave && onSave(bookCode,"usfmText")
+    onSave && onSave(bookCode,usfmText)
   }
 
   const undo = async () => {
