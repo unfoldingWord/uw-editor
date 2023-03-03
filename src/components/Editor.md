@@ -140,7 +140,6 @@ function Component () {
     bookId: 'TIT',
     onSave,
     onUnsavedData,
-    hasInitialUnsavedData: true,
     verbose
   }
   
