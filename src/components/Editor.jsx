@@ -82,6 +82,7 @@ export default function Editor( props) {
       epiteleteHtml.readHtml( bookCode, readOptions ).then((_htmlPerf) => {
         const _alignmentData = epiteleteHtml.getPipelineData(bookCode)
         setOrgUnaligned(getFlatWordObj(_alignmentData?.unalignedWords))
+        setHasUnsavedBlock(getLastSaveUndoInx() !== getUndoInx())
         setHtmlPerf(_htmlPerf);
       });
     }
