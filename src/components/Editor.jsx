@@ -82,7 +82,9 @@ export default function Editor( props) {
       epiteleteHtml.readHtml( bookCode, readOptions ).then((_htmlPerf) => {
         const _alignmentData = epiteleteHtml.getPipelineData(bookCode)
         setOrgUnaligned(getFlatWordObj(_alignmentData?.unalignedWords))
-        setHasUnsavedBlock(getLastSaveUndoInx() !== getUndoInx())
+        const prevUndoInx = epiteleteHtml?.history[bookCode]?.undoInx
+        const hasPrevUnsavedBlock = prevUndoInx && (getLastSaveUndoInx() !== prevUndoInx) || false
+        setHasUnsavedBlock(hasPrevUnsavedBlock)
         setHtmlPerf(_htmlPerf);
       });
     }
