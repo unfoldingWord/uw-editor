@@ -4,7 +4,12 @@ import PkEditor from "./PkEditor";
 import usePkImport from "../hooks/usePkImport";
 
 export default function UsfmEditor( props) {
-  const { docSetId, usfmText, bookId } = props;
+  const { 
+    docSetId, 
+    usfmText, 
+    bookId,
+  } = props;
+
   const docSetBookId = `${docSetId}/${bookId}`
 
   const { loading, done } = usePkImport( docSetBookId, usfmText )
@@ -20,6 +25,8 @@ export default function UsfmEditor( props) {
 UsfmEditor.propTypes = {
   /** Method to call when save button is pressed */
   onSave: PropTypes.func,
+  /** Callback triggered when a verse is clicked on */
+  onReferenceSelected: PropTypes.func,
   /** docSetId identifies a set of documents in proskomma, usually contains org and language code */
   docSetId: PropTypes.string,
   /** The text in usfm format to load in the editor */
@@ -28,6 +35,18 @@ UsfmEditor.propTypes = {
   bookId: PropTypes.string,
   /** Whether to show extra info in the js console */
   verbose: PropTypes.bool,
+  /** Book, chapter, verse to scroll to and highlight */
+  activeReference: PropTypes.shape({
+    bookId: PropTypes.string,
+    chapter: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.number
+    ]),
+    verse: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.number
+    ])
+  })
 };
 
 UsfmEditor.defaultProps = {
