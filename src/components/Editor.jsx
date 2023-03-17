@@ -121,7 +121,7 @@ export default function Editor( props) {
   const incUndoInx = () => setEpUndoInx((prev) => (prev+1))
 
   const decUndoInx = () => {
-    setEpUndoInx((prev) => setEpUndoInx((prev>0) ? prev-1 : 0))
+    setEpUndoInx((prev) => ((prev>0) ? prev-1 : 0))
   }
 
   const onInput = () => {
