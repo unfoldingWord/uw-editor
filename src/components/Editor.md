@@ -47,8 +47,7 @@ function Component () {
   }
   
   const onReferenceSelected = (reference) => console.log(reference)
-  const onUnsavedData = (hasUnsavedData) => console.log(hasUnsavedData)
-
+  
   const docSetId = 'KentR1235/fr_lsg_tit_book'
   
   const epiteleteHtml = useDeepCompareMemo(() => (
@@ -59,7 +58,6 @@ function Component () {
     epiteleteHtml,
     bookId: 'tit',
     onSave,
-    onUnsavedData,
     onReferenceSelected,
     activeReference: {
       bookId: 'tit',
@@ -110,10 +108,6 @@ function Component () {
   const [ep, setEp] = useState(new EpiteleteHtml({ proskomma, docSetId, options: { historySize: 100 } }))
   const verbose = true
 
-  const onUnsavedData = (value) => {
-    console.log(`onUnsavedData callback - value: ${value}`)
-  }
-
   const onSave = async (bookCode,usfmText) => {
     console.log("save button clicked")
     console.log("USFM:",usfmText)
@@ -139,7 +133,6 @@ function Component () {
     epiteleteHtml: ep,
     bookId: 'TIT',
     onSave,
-    onUnsavedData,
     verbose
   }
   
