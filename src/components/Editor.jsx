@@ -45,6 +45,10 @@ export default function Editor( props) {
   const [epLastSaveUndoInx,setEpLastSaveUndoInx] = useState()
   const [epUndoInx,setEpUndoInx] = useState()
 
+  // Avoid sync problems (due to updates in two directions) by setting the below flag 
+  // i.e. always update in a single direction; either read from Epitelete-html or write to it...
+  const [epCachedDataLoaded,setEpCachedDataLoaded] = useState(false)
+
   const hasUnsavedData = ((epUndoInx !== null) && (epLastSaveUndoInx !== epUndoInx)) || false
 
   const arrayToObject = (array, keyField) =>
@@ -70,28 +74,42 @@ export default function Editor( props) {
     return arrayToObject(resArray,"id")
   },[])
 
+  const setOrgUndoInx = useCallback (() => {
+    if ((!epCachedDataLoaded) && (epiteleteHtml?.history[bookCode])) {
+      // Read data from Epitelete-html
+      const prevUndoInx = epiteleteHtml?.history[bookCode]?.undoInx
+      const newEpLastSaveUndoInx = epiteleteHtml?.history[bookCode]?.lastSaveUndoInx
+      setEpUndoInx(prevUndoInx || 0)
+      setEpLastSaveUndoInx(newEpLastSaveUndoInx || 0)
+      setEpCachedDataLoaded(true)
+    }
+  }, [bookCode, epiteleteHtml?.history, epCachedDataLoaded])
+
   useEffect(() => {
-    if (epiteleteHtml?.history[bookCode]) {
+    // Initial update - called on initial mount
+    setOrgUndoInx()
+  }, [setOrgUndoInx])
+
+  useEffect(() => {
+    if ((epCachedDataLoaded) && (epiteleteHtml?.history[bookCode])) {
+      // Write data to Epitelete-html
+      // I.e cache a copy of these internal values externally (in Epitelete-html)
       const tmpObj = epiteleteHtml?.history[bookCode]
       if (epLastSaveUndoInx !== null) tmpObj.lastSaveUndoInx = epLastSaveUndoInx
       if (epUndoInx !== null) tmpObj.undoInx = epUndoInx
       epiteleteHtml.history[bookCode] = {...tmpObj}
     }
-  }, [epiteleteHtml, bookCode, epUndoInx, epLastSaveUndoInx])
+  }, [epiteleteHtml, bookCode, epUndoInx, epLastSaveUndoInx, epCachedDataLoaded])
 
   const setOrgHtml = useCallback ((newHtmlPerf) => {
     const _alignmentData = epiteleteHtml.getPipelineData(bookCode)
     setOrgUnaligned(getFlatWordObj(_alignmentData?.unalignedWords))
-    const prevUndoInx = epiteleteHtml?.history[bookCode]?.undoInx
-    const newEpLastSaveUndoInx = epiteleteHtml?.history[bookCode]?.lastSaveUndoInx
-
-    setEpUndoInx(prevUndoInx || 0)
-    setEpLastSaveUndoInx(newEpLastSaveUndoInx || 0)
-  
+    setOrgUndoInx()
     setHtmlPerf(newHtmlPerf);
-  }, [epiteleteHtml, bookCode, getFlatWordObj])
+  }, [epiteleteHtml, bookCode, getFlatWordObj, setOrgUndoInx])
 
   useEffect(() => {
+    // Roundtrip - get html and alignment data
     if (epiteleteHtml) {
       //        epiteleteHtml.readHtml(bookCode,{},bcvQuery).then((_htmlPerf) => {
       epiteleteHtml.readHtml( 
