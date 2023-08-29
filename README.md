@@ -110,7 +110,7 @@ yarn add uw-editor
 ```
 Also you will need to add the peer dependencies:
 ```shell
-npm install @mui/material @mui/styles @mui/icons-material  @mui/styled-engine npm:@mui/styled-engine-sc@latest react react-dom translation-helps-rcl
+npm install @mui/material @mui/styles @mui/icons-material @mui/styled-engine@npm:@mui/styled-engine-sc@latest react react-dom translation-helps-rcl
 ```
 OR 
 ```shell
