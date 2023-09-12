@@ -1,5 +1,12 @@
 <div id="top"></div>
 
+# DEPRECATED
+
+## All active development has instead been moved to
+https://github.com/unfoldingWord/oce-editor-tools
+
+<br/>
+<br/>
 
 <!-- PROJECT SHIELDS -->
 <!--
